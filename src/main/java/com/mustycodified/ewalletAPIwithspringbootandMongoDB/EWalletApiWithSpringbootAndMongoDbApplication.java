@@ -1,8 +1,36 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB;
 
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+@OpenAPIDefinition(
+		info=@Info(
+				title = "eWallet RESTful API Documentation",
+				description = "This pages document eWallet Restful Web service Endpoints",
+				version = "1.0",
+				contact = @Contact(
+						name = "Musty-codified",
+						email = "ilemonamustapha@gmail.com",
+						url = "https://springdoc.org"
+				),
+				license = @License(
+						name = "Apache 2.0",
+						url =  "https://springdoc.org"
+				)
+		),
+		externalDocs = @ExternalDocumentation(
+				description = "eWallet Service External Document",
+				url = "https://springdoc.org"
+		)
+)
 @SpringBootApplication
 public class EWalletApiWithSpringbootAndMongoDbApplication {
 
@@ -10,4 +38,8 @@ public class EWalletApiWithSpringbootAndMongoDbApplication {
 		SpringApplication.run(EWalletApiWithSpringbootAndMongoDbApplication.class, args);
 	}
 
+	@Bean
+	public PasswordEncoder passwordEncoder(){
+		return new BCryptPasswordEncoder();
+	}
 }
