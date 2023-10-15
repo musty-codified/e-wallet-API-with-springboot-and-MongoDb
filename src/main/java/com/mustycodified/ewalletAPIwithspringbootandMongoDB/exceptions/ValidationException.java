@@ -7,8 +7,8 @@ public class ValidationException extends RuntimeException {
         this.debugMessage = "Validation failed";
     }
 
-    public ValidationException(String debugMessage) {
-        super(debugMessage);
-        this.debugMessage = debugMessage;
+    public ValidationException(String message) {
+        super(message);
+        this.debugMessage = message;
     }
 }

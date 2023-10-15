@@ -8,8 +8,8 @@ public class NotFoundException extends RuntimeException {
         this.debugMessage="Resource not found";
     }
 
-    public NotFoundException(String debugMessage){
-        super(debugMessage);
-        this.debugMessage=debugMessage;
+    public NotFoundException(String message){
+        super(message);
+        this.debugMessage=message;
     }
 }

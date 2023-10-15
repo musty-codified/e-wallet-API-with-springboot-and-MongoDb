@@ -27,12 +27,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailService customUserDetailService;
+    private final JwtAuthFilter jwtAuthFilter;
     private static final String [] WHITE_LISTED_URLS = {
-            "/api/v1/users/signup",
-            "/api/v1/users/update-password",
+            "/api/v1/auth/**",
+            SecurityConstants.SIGN_UP_URL,
+            SecurityConstants.UPDATE_PASSWORD_URL,
             "/v3/api-docs/**", "/configuration/**", "/swagger*/**", "/swagger-ui/**", "/webjars/**"
     };
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,7 +46,10 @@ public class WebSecurityConfig {
                 .authenticated()
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -65,6 +70,14 @@ public class WebSecurityConfig {
         };
     }
 
+    //This bean configuration is needed for user authentication process a.k.a. user login feature
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(customUserDetailService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)

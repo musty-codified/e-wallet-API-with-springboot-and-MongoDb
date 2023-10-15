@@ -2,16 +2,13 @@ package com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.requestDtos;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Schema(description = "User activation details")
+@Schema(description = "User login request details")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivateUserDto {
-
+public class UserLoginDto {
     private String email;
-    private String otp;
+    private String password;
 }

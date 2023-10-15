@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @OpenAPIDefinition(
 		info=@Info(
-				title = "eWallet RESTful API Documentation",
+				title = "eWallet Application RESTful Web API Documentation",
 				description = "This pages document eWallet Restful Web service Endpoints",
 				version = "1.0",
 				contact = @Contact(
@@ -27,7 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 				)
 		),
 		externalDocs = @ExternalDocumentation(
-				description = "eWallet Service External Document",
+				description = "eWallet Service Additional External Documentation",
 				url = "https://springdoc.org"
 		)
 )
@@ -42,4 +42,15 @@ public class EWalletApiWithSpringbootAndMongoDbApplication {
 	public PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
+
+
+//	@Bean
+//	public SpringApplicationContext springApplicationContext(){
+//		return new SpringApplicationContext();
+//	}
+//
+//	@Bean(name = "AppProperties")
+//	public AppProperties getAppProperties(){
+//		return new AppProperties();
+//	}
 }

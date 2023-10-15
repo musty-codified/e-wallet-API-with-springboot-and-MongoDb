@@ -1,10 +1,12 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums;
 
 public enum Authorities {
-    READ_AUTHORITY("read:authority"),
-    WRITE_AUTHORITY("write:authority"),
-    DELETE_AUTHORITY("delete:authority");
-
+    USER_READ("user:read"),
+    USER_EDIT("user:write"),
+    ACCOUNT_READ("account:read"),
+    ACCOUNT_EDIT("account:edit"),
+    ACCOUNT_WITHDRAW("account:withdraw"),
+    ACCOUNT_DEPOSIT("account:deposit");
     private final String authorities;
 
     Authorities(String authorities){

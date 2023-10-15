@@ -38,6 +38,11 @@
 			<artifactId>javax.persistence-api</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
 		<!--- Memcached Dependency -->
 		<dependency>
 			<groupId>com.google.code.simple-spring-memcached</groupId>

@@ -28,4 +28,11 @@ public class GlobalExceptionHandler {
         logger.error(ex.getMessage());
         return new ApiResponse<>("Error: "+ex.getMessage(), false,null);
     }
+    @ExceptionHandler(value = Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ApiResponse<String> handleOtherServiceException(Exception ex){
+        logger.error(ex.getMessage());
+        return new ApiResponse<>("Error: "+ex.getMessage(), false,null);
+    }
 }

@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@Schema(description = "User details")
+@Schema(description = "User signup details")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

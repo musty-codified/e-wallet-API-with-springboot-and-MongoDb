@@ -1,17 +1,21 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.requestDtos;
 
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "User activation details")
+import javax.validation.constraints.NotBlank;
+
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivateUserDto {
-
+public class ChangePasswordDto {
+    @NotBlank(message = "email must be provided")
     private String email;
+    @NotBlank(message = "password must be provided")
+    private String password;
     private String otp;
 }

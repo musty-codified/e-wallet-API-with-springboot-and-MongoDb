@@ -16,7 +16,7 @@ public class LocalMemStorage {
     private final MemcachedClient memcachedClient;
     Logger logger = LoggerFactory.getLogger(LocalMemStorage.class);
 
-    public void save(String key, Long value, int expiryInSeconds) {
+    public void save(String key, String value, int expiryInSeconds) {
 
         try {
 
@@ -29,13 +29,13 @@ public class LocalMemStorage {
 
     }
 
-    public void setBlacklist(String token, int expiryInSeconds) {
+    public void setBlacklist(String otp, int expiryInSeconds) {
         try {
             if (!keyExist("Blacklist")) {
-                memcachedClient.set("Blacklist", expiryInSeconds, token);
+                memcachedClient.set("Blacklist", expiryInSeconds, otp);
 
             } else {
-                String tokens = this.getValueByKey("Blacklist") + " ," + token;
+                String tokens = this.getValueByKey("Blacklist") + " ," + otp;
                 memcachedClient.set("Blacklist", expiryInSeconds, tokens);
 
             }
@@ -45,13 +45,15 @@ public class LocalMemStorage {
         }
     }
 
-    public Long getValueByKey(String key) {
+    public String getValueByKey(String key) {
         try {
             return memcachedClient.get(key);
         } catch (Exception e) {
             return null;
         }
     }
+
+
     public Boolean keyExist(String key) {
         try {
             return memcachedClient.get(key)!=null;

@@ -81,7 +81,7 @@ public class AppUtils {
     public Long generateOTP(){
         Random rnd = new Random();
         Long number = (long) rnd.nextInt(999999);
-        return  number;
+        return number;
     }
 
     public  Object getObject(String content, Class cls){
