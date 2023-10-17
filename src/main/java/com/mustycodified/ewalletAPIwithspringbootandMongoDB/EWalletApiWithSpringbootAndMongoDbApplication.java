@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 @OpenAPIDefinition(
 		info=@Info(
@@ -43,6 +44,16 @@ public class EWalletApiWithSpringbootAndMongoDbApplication {
 		return new BCryptPasswordEncoder();
 	}
 
+
+//	@Bean
+//	public WebClient webClient(){
+//		return WebClient.builder().build();
+//	}
+
+	@Bean
+	public RestTemplate restTemplate(){
+		return new RestTemplate();
+	}
 
 //	@Bean
 //	public SpringApplicationContext springApplicationContext(){

@@ -1,6 +1,5 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.impl;
 
-import com.mongodb.client.result.UpdateResult;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.requestDtos.*;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.UserResponseDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.User;
@@ -126,7 +125,7 @@ public class UserServiceImpl implements UserService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword())
             );
-            UserResponseDto userResponseDto = null;
+            UserResponseDto userResponseDto;
 
             if (authentication.isAuthenticated()) {
                 User user = userRepository.findByEmail(creds.getEmail())
@@ -139,12 +138,10 @@ public class UserServiceImpl implements UserService {
 
                 String accessToken = jwtUtil.generateToken(customUserDetailService.loadUserByUsername(user.getEmail()));
 
-
                 Query query = new Query(Criteria.where("firstName").is(user.getFirstName()));
                 Update update = new Update().set("lastLoginDate", new Date());
                  mongoTemplate.updateFirst(query, update, User.class);
                 User loggedInUser = mongoTemplate.findOne(query, User.class);
-
 
                 userResponseDto = appUtil.getMapper().convertValue(loggedInUser, UserResponseDto.class);
                 userResponseDto.setToken(accessToken);
