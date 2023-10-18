@@ -15,7 +15,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @AllArgsConstructor
-public class User {
+public class User extends BaseEntity{
 
     private static final long serialVersionUID = 2L;
     @Indexed(unique = true)

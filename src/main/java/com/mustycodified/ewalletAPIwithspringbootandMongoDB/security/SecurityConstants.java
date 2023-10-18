@@ -6,6 +6,7 @@ public class SecurityConstants {
     public static final String  HEADER_STRING = "Authorization";
     public static final String SIGN_UP_URL ="/api/v1/users/signup";
     public static final String UPDATE_PASSWORD_URL ="/api/v1/users/update-password";
+    public static final String LOG_TRANSACTION_URL ="/api/v1/payments/verify/{payment_reference}";
 
 
 }

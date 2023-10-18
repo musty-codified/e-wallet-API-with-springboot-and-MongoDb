@@ -5,18 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@Schema(description = "Api Response containing metadata sent back to the user")
+@Schema(description = "Response data payload")
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiResponse<T> {
 
-    @Schema(description = " message metadata")
+    @Schema(description = " message")
     private String message;
 
-    @Schema(description = "status metadata - true or false")
+    @Schema(description = "")
     private boolean status;
+
     private T data;
 }
 

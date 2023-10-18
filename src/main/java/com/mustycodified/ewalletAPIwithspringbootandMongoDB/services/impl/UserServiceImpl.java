@@ -3,12 +3,14 @@ package com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.impl;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.requestDtos.*;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.UserResponseDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.User;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Wallet;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums.Roles;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums.Status;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.exceptions.AuthenticationException;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.exceptions.NotFoundException;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.exceptions.ValidationException;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.repositories.UserRepository;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.repositories.WalletRepository;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.security.CustomUserDetailService;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.security.JwtUtils;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.UserService;
@@ -30,8 +32,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -49,6 +53,8 @@ public class UserServiceImpl implements UserService {
     private final CustomUserDetailService customUserDetailService;
 
     private final JwtUtils jwtUtil;
+
+    private final WalletRepository walletRepository;
 
     private final AuthenticationManager authenticationManager;
 
@@ -70,6 +76,7 @@ public class UserServiceImpl implements UserService {
         String userId = appUtil.generateSerialNumber("usr");
         newUser.setUuid(userId);
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        newUser.setPhoneNumber((appUtil.getFormattedNumber(userDto.getPhoneNumber())));
         //map(x->Objects.toString(x))
         newUser.setRoles(Roles.ROLE_USER.getAuthorities().stream().map(Objects::toString).collect(Collectors.joining(",")));
         newUser.setStatus(Status.INACTIVE.name());
@@ -89,6 +96,21 @@ public class UserServiceImpl implements UserService {
 
         userToActivate.setStatus(Status.ACTIVE.name());
         UserResponseDto userResponseDto = appUtil.getMapper().convertValue(userRepository.save(userToActivate), UserResponseDto.class);
+
+        Wallet newWallet = Wallet.builder()
+                .balance(BigDecimal.ZERO)
+                .email(userToActivate.getEmail())
+                .walletUUID(appUtil.generateSerialNumber("0"))
+                .build();
+        walletRepository.save(newWallet);
+
+        MailDto mailDto = MailDto.builder()
+                .to(activateUserDto.getEmail())
+                .subject("YOUR ACCOUNT IS ACTIVATED")
+                .body(String.format("Hi %s, \n You have successfully activated your account. Kindly login to start making use of the app", userResponseDto.getFirstName()))
+                .build();
+
+        emailService.sendMail(mailDto);
 
         return userResponseDto;
     }
@@ -140,7 +162,7 @@ public class UserServiceImpl implements UserService {
 
                 Query query = new Query(Criteria.where("firstName").is(user.getFirstName()));
                 Update update = new Update().set("lastLoginDate", new Date());
-                 mongoTemplate.updateFirst(query, update, User.class);
+                mongoTemplate.updateFirst(query, update, User.class);
                 User loggedInUser = mongoTemplate.findOne(query, User.class);
 
                 userResponseDto = appUtil.getMapper().convertValue(loggedInUser, UserResponseDto.class);

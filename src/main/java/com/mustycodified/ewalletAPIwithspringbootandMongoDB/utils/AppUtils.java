@@ -93,6 +93,15 @@ public class AppUtils {
             return null;
         }
     }
+
+    public void print(Object obj){
+        try {
+            LOGGER.info(new ObjectMapper().writeValueAsString(obj));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
     public ObjectMapper getMapper(){
         ObjectMapper mapper= new ObjectMapper();
         return mapper;

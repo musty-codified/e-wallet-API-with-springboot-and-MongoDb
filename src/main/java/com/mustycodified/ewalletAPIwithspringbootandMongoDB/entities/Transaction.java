@@ -2,8 +2,10 @@ package com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,7 +15,8 @@ import java.math.BigDecimal;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @AllArgsConstructor
-public class Transaction {
+@NoArgsConstructor
+public class Transaction extends BaseEntity{
 
     @Indexed(unique = true)
     private String reference;
@@ -27,5 +30,18 @@ public class Transaction {
     private BigDecimal amount;
 
     private String currency;
+    //!
+    private String status;
+
+    private String domain;
+
+    private String gateway_response;
+
+    private String message;
+
+    private String channel;
+
+    private String ip_address;
+
 
 }
