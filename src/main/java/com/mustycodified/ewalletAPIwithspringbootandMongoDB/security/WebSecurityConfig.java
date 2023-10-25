@@ -34,6 +34,8 @@ public class WebSecurityConfig {
             SecurityConstants.SIGN_UP_URL,
             SecurityConstants.UPDATE_PASSWORD_URL,
             SecurityConstants.LOG_TRANSACTION_URL,
+            SecurityConstants.TRANSFER_RECIPIENT_URL,
+            SecurityConstants.CONFIRM_RECIPIENT_URL,
             "/v3/api-docs/**", "/configuration/**", "/swagger*/**", "/swagger-ui/**", "/webjars/**"
     };
 

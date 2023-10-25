@@ -24,7 +24,7 @@ public class LocalMemStorage {
 
         } catch (TimeoutException | InterruptedException | MemcachedException e) {
             e.printStackTrace();
-            logger.info("Memcached encountered an error : {}",e.getMessage());
+            logger.info("Memcached encountered an error : {}", e.getMessage());
         }
 
     }

@@ -14,7 +14,7 @@ public class InitiateTransactionDto {
     @NotBlank(message = "email must be provided")
     private String email;
 
-    @NotBlank(message = "amount must be provided and must be specified in subunit of kobo")
+    @NotBlank(message = "amount must be provided and must be specified in kobo")
     private String amount;
 
     private String callback_url;

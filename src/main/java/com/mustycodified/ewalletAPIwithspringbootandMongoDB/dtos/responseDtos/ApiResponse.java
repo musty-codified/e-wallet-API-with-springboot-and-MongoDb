@@ -11,13 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiResponse<T> {
-
-    @Schema(description = " message")
     private String message;
-
-    @Schema(description = "")
     private boolean status;
-
     private T data;
 }
 

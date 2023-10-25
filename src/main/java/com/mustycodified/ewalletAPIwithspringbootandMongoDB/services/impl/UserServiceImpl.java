@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
 
                 String accessToken = jwtUtil.generateToken(customUserDetailService.loadUserByUsername(user.getEmail()));
 
-                Query query = new Query(Criteria.where("firstName").is(user.getFirstName()));
+                Query query = new Query(Criteria.where("email").is(user.getEmail()));
                 Update update = new Update().set("lastLoginDate", new Date());
                 mongoTemplate.updateFirst(query, update, User.class);
                 User loggedInUser = mongoTemplate.findOne(query, User.class);
@@ -202,6 +202,7 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("Request token has already expired");
 
         blacklistToken(updatePasswordDto.getVerificationToken());
+
        //Retrieve the details of the currently authenticated user
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String newToken = jwtUtil.generateToken(userDetails);

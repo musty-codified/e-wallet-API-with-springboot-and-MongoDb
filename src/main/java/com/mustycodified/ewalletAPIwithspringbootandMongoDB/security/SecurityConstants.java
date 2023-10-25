@@ -7,6 +7,7 @@ public class SecurityConstants {
     public static final String SIGN_UP_URL ="/api/v1/users/signup";
     public static final String UPDATE_PASSWORD_URL ="/api/v1/users/update-password";
     public static final String LOG_TRANSACTION_URL ="/api/v1/payments/verify/{payment_reference}";
-
+    public static final String TRANSFER_RECIPIENT_URL ="/api/v1/payments/withdrawal/create-transfer-recipient";
+    public static final String CONFIRM_RECIPIENT_URL ="/api/v1/payments/validate-account-details";
 
 }
