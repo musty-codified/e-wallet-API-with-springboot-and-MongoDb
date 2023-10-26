@@ -4,7 +4,7 @@ The application enable users to create and manage their digital wallet, add fund
 
 
 ## Technology ##
-Following tools and libraries were used during the development of API :
+Following tools and libraries were used during the development of the API :
 - **Java 17** - Java version
 - **Spring Boot** - Server-side framework
 - **Build Tool: Maven**
@@ -22,9 +22,7 @@ Uses Spring Security with JWT for stateless authentication and authorization.
 The application can be deployed on any Java Servlet container, or docker containers.
 
 ## Response and Exception Handling ##
-The classes for handling the entire application's exceptions are present in the **_exceptions_** package.
-Last, the API response are all being sent in a uniform manner using the **_Response_** class present in the dto/response sub-package. 
-This class allows us to create uniform objects which result in a response as shown below :
+API response are all being sent in a uniform manner allowing us to create uniform objects which result in a response as shown below :
 
 [//]: # (```)
 
@@ -68,7 +66,7 @@ This class allows us to create uniform objects which result in a response as sho
 
 [//]: # (```)
 
-And when there is an exception, the following responses are sent back (result of "/api/v1/users/UUakFkkmY/posts/1/comments" POST request):
+And when there is an exception, the following responses are sent back (result of "/api/v1/auth/resend-token" POST request):
 
 [//]: # (```)
 
@@ -87,11 +85,10 @@ And when there is an exception, the following responses are sent back (result of
 ## Running the server locally ##
 * Ensure Memcached is installed and running on your machine before you run this service.
 * **Clone the repository:** git clone https://github.com/musty-codified/e-wallet-API-with-springboot-and-MongoDb.git
-* **To run this Spring Boot app you need to first build it.
 * **Build the project using maven:** mvn clean install or (compile and package)
 * **Run the application:** mvn spring-boot:run
 
-Using the following commands:
+You may Use the following commands:
 
 ```
 maven clean compile
