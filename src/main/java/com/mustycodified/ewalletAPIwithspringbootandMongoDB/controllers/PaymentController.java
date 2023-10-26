@@ -6,7 +6,6 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.BankDt
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.FundTransferDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.InitiateTransactionDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.ApiResponse;
-import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.BankListResponseDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransactionInitResponseDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +26,17 @@ import java.util.List;
         "<li>Go to '/deposit/initiate' endpoint and enter your details. The <b>callbackUrl</b> and <b>metadata</b> fields are optional. " +
         "just leave them be</li> " +
         "<li>Copy the payment link returned in the response object to any browser to make your payment.</li>" +
-        "<li>Copy the reference code returned if it was successful and go to '/verify/{payment_reference}' endpoint to verify if your deposit was successful</li>" +
+        "<li>Copy the reference code returned if it was successful and go to '/verify/{payment_reference}' endpoint to verify if your deposit was successful.</li>" +
+        "</ol> " +
+        "<h3> For withdrawal which is implemented as transfer:</h3> " +
+        "<ol> " +
+        "<li>Go to 'withdrawal/create-transfer-recipient' endpoint to create your Transfer recipient.</li> " +
+        "<p>You can use the <b>validate-account-details</b> endpoint to validate your account details and the " +
+        "<b>banks</b> endpoint to see all available banks.</p>" +
+        "<li>Copy the <b>reference</b> code 'TRF_....' and the <b>recipient</b> code 'RCP_....' generated and go to 'withdrawal/send-money' endpoint.</li> " +
+        "<li>After initiating your withdrawal, you will receive an error code response because the payment was a test payment.</li>" +
         "</ol> "
+
 
 )
 public class PaymentController {
@@ -48,7 +56,7 @@ public class PaymentController {
         return ResponseEntity.ok(transactionService.verifyTransaction(payment_reference));
     }
 
-    //   =================================== Transfer transactions ========================================  //
+    //   ========================================= Transfer transactions ==========================================  //
     @Operation(summary = "Fetches list of supported banks that are active in a country")
     @GetMapping("/banks")
     public ResponseEntity<ApiResponse<List<BankDto>>> fetchBanks(
@@ -56,17 +64,23 @@ public class PaymentController {
             @Parameter(description = "(Optional) enter nuban or mobile money etc") @RequestParam(name = "type") String type){
         return ResponseEntity.ok(transactionService.fetchBanks(currency, type));
     }
+
+    @Operation(summary = "Confirm the authenticity of recipient's account before making transfers")
+    @GetMapping("/validate-account-details")
+    public ResponseEntity<ApiResponse<AccountDto>> verifyAccountDetails(
+            @Parameter(description = "10 digits account number") @RequestParam (name = "account_number") String accountNumber,
+            @Parameter(description = "057 for zenith bank, 044 - access bank, etc. Read the docs") @RequestParam (name = "bank_code") String bankCode){
+        return ResponseEntity.ok(transactionService.resolveBankDetails(accountNumber, bankCode));
+    }
+
     @Operation(summary = "Before sending money to an account you need to create a transfer recipient with the beneficiary's account details")
     @PostMapping("/withdrawal/create-transfer-recipient")
     public ResponseEntity<ApiResponse<FundTransferDto>> createTransferRecipient(@RequestBody AccountDto accountDto){
         return ResponseEntity.ok(transactionService.createTransferRecipient(accountDto));
     }
-
-    @Operation(summary = "Confirm the authenticity of recipient's account before making transfers")
-    @GetMapping("/validate-account-details")
-    public ResponseEntity<ApiResponse<AccountDto>> ValidateAccountDetails(
-            @Parameter(description = "10 digits account number") @RequestParam (name = "account_number") String accountNumber,
-            @Parameter(description = "057 for zenith bank, 044 - access bank, etc. Read the docs") @RequestParam (name = "bank_code") String bankCode){
-        return ResponseEntity.ok(transactionService.resolveBankDetails(accountNumber, bankCode));
+    @Operation(summary = "Send money to an account" )
+    @PostMapping("withdrawal/send-money")
+    public ResponseEntity<ApiResponse<TransactionInitResponseDto>> initiateTransfer(@RequestBody FundTransferDto fundTransferDto){
+        return ResponseEntity.ok(transactionService.initiateTransfer(fundTransferDto));
     }
 }

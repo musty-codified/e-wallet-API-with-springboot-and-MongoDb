@@ -20,4 +20,6 @@ public interface TransactionService {
     TransactionInitResponseDto saveTransaction(TransactionInitResponseDto transactionDto);
 
    ApiResponse<AccountDto> resolveBankDetails(String accountNumber, String bankCode);
+
+   ApiResponse<TransactionInitResponseDto> initiateTransfer( FundTransferDto fundTransferDto);
 }

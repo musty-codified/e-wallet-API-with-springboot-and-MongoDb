@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 @OpenAPIDefinition(
 		info=@Info(
-				title = "eWallet Application RESTful Web API Documentation",
+				title = "eWallet App RESTful Web API Documentation",
 				description = "This pages document eWallet Restful Web service Endpoints",
 				version = "1.0",
 				contact = @Contact(
@@ -43,7 +43,6 @@ public class EWalletApiWithSpringbootAndMongoDbApplication {
 	public PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
-
 
 //	@Bean
 //	public WebClient webClient(){

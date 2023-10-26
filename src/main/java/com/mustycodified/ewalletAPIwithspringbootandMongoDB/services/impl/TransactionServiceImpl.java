@@ -9,8 +9,11 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.Ap
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.BankListResponseDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransactionInitResponseDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Transaction;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Wallet;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums.TransactionType;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.exceptions.ValidationException;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.repositories.TransactionRepository;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.repositories.WalletRepository;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.TransactionService;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.WalletService;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.utils.AppUtils;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -35,9 +39,11 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
     private final RestTemplate restTemplate;
     private final AppUtils appUtil;
-    private LocalMemStorage localMemStorage;
+    private final LocalMemStorage localMemStorage;
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
+
+    private final WalletRepository walletRepository;
     @Value("${api.paystack_secret}")
     private String apiKey;
 
@@ -122,22 +128,22 @@ public class TransactionServiceImpl implements TransactionService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity entity = new HttpEntity<>(httpHeaders);
+        HttpEntity<AccountDto> entity = new HttpEntity<>(accountDto, httpHeaders);
 
-     ResponseEntity<ApiResponse> apiResponse = null;
+     ResponseEntity<ApiResponse<FundTransferDto>> apiResponse = null;
      try {
-      apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
+      apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, new ParameterizedTypeReference<>() {});
 
      } catch (Exception e){
          e.printStackTrace();
-         logger.error("encountered an error");
+         logger.error("error getting response from paystack");
      }
         TransferRecipientDto transferRecipientDto =
              appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransferRecipientDto.class);
 
         //create and save unique transfer reference in memcached for use while initiating the fund transfer
      String uniqueTransferReference = appUtil.generateSerialNumber("TRF_");
-     localMemStorage.save(transferRecipientDto.getRecipient_code(),
+        localMemStorage.save(transferRecipientDto.getRecipient_code(),
              uniqueTransferReference, 3600);
 
      FundTransferDto fundTransferDto = FundTransferDto.builder()
@@ -145,6 +151,40 @@ public class TransactionServiceImpl implements TransactionService {
              .reference(uniqueTransferReference)
              .build();
         return new ApiResponse<>( apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), fundTransferDto);
+    }
+
+    @Override
+    public ApiResponse<TransactionInitResponseDto> initiateTransfer(FundTransferDto fundTransferDto) {
+
+        if (!localMemStorage.keyExist(fundTransferDto.getRecipient_code())) {
+            throw new ValidationException("Transfer session has expired please try again");
+        }
+        BigDecimal balance = walletRepository.findByEmail(fundTransferDto.getEmail())
+                .map(Wallet::getBalance).orElse(BigDecimal.ZERO);
+
+        if(balance.compareTo(fundTransferDto.getAmount())<0)
+            throw new ValidationException("Insufficient balance");
+
+        localMemStorage.clear(fundTransferDto.getRecipient_code());
+
+        String requestUrl = "https://api.paystack.co/transfer";
+
+        //Set Headers for querying paystack's endpoint
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer "+ apiKey);
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
+        ResponseEntity<ApiResponse> apiResponse =
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
+
+        //map response to FundTransferDto
+        TransactionInitResponseDto transactionInitResponseDto =
+                appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransactionInitResponseDto.class);
+        transactionInitResponseDto.setTransactionType(TransactionType.TRANSACTION_TYPE_TRANSFER.getTransaction());
+        transactionInitResponseDto.setAmount(transactionInitResponseDto.getAmount().divide(new BigDecimal(100), 2, RoundingMode.DOWN));
+
+        return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), this.saveTransaction(transactionInitResponseDto));
     }
 
     @Override
@@ -163,7 +203,6 @@ public class TransactionServiceImpl implements TransactionService {
                 logger.error("error logging transaction {"+e.getMessage()+"} ");
             }
         }
-
 
         return transactionDto;
     }
@@ -188,11 +227,13 @@ public class TransactionServiceImpl implements TransactionService {
             logger.error("error getting paytack response");
         }
 
-        //Map response data to AccountDto
+        //map response data to AccountDto
      AccountDto accountDto = appUtil.getMapper()
              .convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), AccountDto.class);
         appUtil.print("response data: " + apiResponse );
 
         return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), accountDto);
     }
+
+
 }
