@@ -11,11 +11,12 @@ Following tools and libraries were used during the development of the API :
 - **Java 17** - Java version
 - **Spring Boot** - Server-side framework
 - **Build Tool: Maven**
-- **MongoDB** - Database
+- **MongoDB** - NoSQLDatabase
 - **Swagger** - API documentation [here](http://localhost:9090/swagger-ui/index.html#/)
 - **JWT** - Authentication mechanism for REST APIs
 - **Docker** - Containerizing framework
 - **Memcached** - distributed memory-caching service
+
 
 ### Authentication and Authorization
 Uses Spring Security with JWT for stateless authentication and authorization.
@@ -47,8 +48,6 @@ For any issues or queries, please raise a ticket on the GitHub repository or ema
 The application exposes a RESTful API for creating and managing digital wallets.
 It's as important to document (as is the development) and make your APIs available in a readable manner for frontend teams or external consumers.
 The tool for API documentation used in this project is Swagger, you can open the same inside a browser at the following url - [here](http://localhost:9090/swagger-ui/index.html#/)
-
-
 
 
 
