@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,22 +16,29 @@ import org.springframework.web.client.RestTemplate;
 @OpenAPIDefinition(
 		info=@Info(
 				title = "eWallet App RESTful Web API Documentation",
-				description = "This pages document eWallet Restful Web service Endpoints",
+				description = "These pages document a digital Wallet Restful Web service Endpoints",
 				version = "1.0",
 				contact = @Contact(
 						name = "Musty-codified",
-						email = "ilemonamustapha@gmail.com",
+						email = "ewalletappllc@gmail.com",
 						url = "https://springdoc.org"
 				),
 				license = @License(
-						name = "Apache 2.0",
-						url =  "https://springdoc.org"
+						name = "Apache 2.0.",
+						url =  "https://www.apache.org/licenses/LICENSE-2.0.html"
 				)
 		),
 		externalDocs = @ExternalDocumentation(
-				description = "eWallet Service Additional External Documentation",
+				description = "eWallet REST API External Documentation",
 				url = "https://springdoc.org"
-		)
+		),
+		servers = {
+				@Server(
+						url = "http://localhost:9090/",
+						description = "The Development API Server"
+				),
+				// Add more servers if necessary
+		}
 )
 @SpringBootApplication
 public class EWalletApiWithSpringbootAndMongoDbApplication {
