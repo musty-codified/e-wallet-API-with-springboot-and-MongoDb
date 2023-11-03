@@ -53,7 +53,7 @@ public class TransactionServiceImpl implements TransactionService {
         String url = "https://api.paystack.co/transaction/initialize";
        transactionDto.setAmount(transactionDto.getAmount() + "00");
 
-        //Set authorization header for querying Paystack's end points
+        //Set headers for querying Paystack's end points
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -67,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
     public ApiResponse<TransactionInitResponseDto> verifyTransaction(String reference) {
         String url = "https://api.paystack.co/transaction/verify/ " + reference;
 
-        //Set authorization header for querying Paystack's end points
+        //Set headers for querying Paystack's end points
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -77,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
               restTemplate.exchange(url, HttpMethod.GET, entity, ApiResponse.class);
 
      TransactionInitResponseDto responseData =
-             appUtil.getMapper().convertValue(Objects.requireNonNull(responseDto.getBody().getData()), TransactionInitResponseDto.class);
+             appUtil.getMapper().convertValue(Objects.requireNonNull(responseDto.getBody()).getData(), TransactionInitResponseDto.class);
 
       responseData.setAmount(responseData.getAmount().divide(new BigDecimal(100), 2, RoundingMode.DOWN));
          appUtil.print("Initiate transaction response data " + responseData);
@@ -86,7 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (!transactionRepository
                 .existsByReferenceOrId(responseData.getReference(), responseData.getId())) {
 
-            if (responseData.getStatus().equalsIgnoreCase("success")) { // Update wallet only when transaction is fulfilled
+            if (responseData.getStatus().equalsIgnoreCase("success")) { // Update wallet only when transaction is successful
                 walletService.updateWallet(responseData.getCustomer().getEmail(), responseData.getAmount());
             }
 
@@ -98,14 +98,14 @@ public class TransactionServiceImpl implements TransactionService {
         return new ApiResponse<>(responseData.getStatus(),
                 responseData.getGateway_response().equalsIgnoreCase("success"), responseData);
     }
-
+//==========================transfer=======================================================================//
     @Override
     public ApiResponse<List<BankDto>> fetchBanks(String currency, String type) {
 
         //((type == null)? "": "&type="+type)
         String url = "https://api.paystack.co/bank" + currency+((type == null)? "": "&type="+type);
 
-        //Set Authorization header to query Paystack's endpoint
+        //Set headers for querying Paystack's endpoint
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -211,7 +211,7 @@ public class TransactionServiceImpl implements TransactionService {
     public ApiResponse<AccountDto> resolveBankDetails(String accountNumber, String bankCode) {
         String requestUrl = "https://api.paystack.co/bank/resolve?account_number="+accountNumber +"&bank_code="+bankCode;
 
-        //Set authorization headers for querying paystack's endpoint
+        //Set Headers for querying paystack's endpoint
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

@@ -22,4 +22,6 @@ public interface TransactionService {
    ApiResponse<AccountDto> resolveBankDetails(String accountNumber, String bankCode);
 
    ApiResponse<TransactionInitResponseDto> initiateTransfer( FundTransferDto fundTransferDto);
+
+
 }
