@@ -24,7 +24,7 @@ Uses Spring Security with JWT for stateless authentication and authorization.
 The application can be deployed on any Java Servlet container, or docker containers.
 
 ## Running the server locally ##
-* **Ensure Memcached is installed and running on your machine before you run this service.
+* Ensure Memcached is installed and running on your machine before you run this service.
 * **Clone the repository:** git clone https://github.com/musty-codified/e-wallet-API-with-springboot-and-MongoDb.git
 * **Build the project using maven:** mvn clean install or (mvn clean compile followed by mvn clean package)
 * **Run the application:** mvn spring-boot:run
