@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,7 @@ public class PaymentController {
     private final TransactionService transactionService;
 
     @Operation(summary = "Initiates a transaction to get payment link")
-    @PostMapping("/deposit/initiate")
+    @PostMapping("/initiate/deposit")
     public ResponseEntity<ApiResponse<String>> getPaymentUrl(@RequestBody InitiateTransactionDto transactionDto){
         return ResponseEntity.ok(transactionService.initiateTransaction(transactionDto));
     }
@@ -54,6 +55,17 @@ public class PaymentController {
             @Parameter(description = "Use the reference number generated when the transaction was initiated")
             @PathVariable String payment_reference ){
         return ResponseEntity.ok(transactionService.verifyTransaction(payment_reference));
+    }
+
+
+    @GetMapping("/wallet/transactions")
+    public ResponseEntity<Page<TransactionInitResponseDto>> listTransactions(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                                             @RequestParam(value = "limit", defaultValue = "5") int limit,
+                                                                             @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+                                                                             @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir){
+
+        return ResponseEntity.ok(transactionService.listTransactions(page, limit, sortBy, sortDir));
+
     }
 
     //   ========================================= Transfer transactions ==========================================  //

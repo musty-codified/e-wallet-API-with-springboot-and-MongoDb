@@ -6,6 +6,7 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.Ap
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.BankDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.FundTransferDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransactionInitResponseDto;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,6 +14,9 @@ public interface TransactionService {
 
     ApiResponse<String> initiateTransaction(InitiateTransactionDto transactionDto);
     ApiResponse <TransactionInitResponseDto> verifyTransaction(String reference);
+
+    Page<TransactionInitResponseDto> listTransactions(int perPage, int page, String sortBy, String sortDir);
+
     ApiResponse<List<BankDto>> fetchBanks(String currency, String type);
 
     ApiResponse<FundTransferDto> createTransferRecipient(AccountDto accountDto);

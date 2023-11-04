@@ -4,10 +4,7 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.Accoun
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.BankDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.FundTransferDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.InitiateTransactionDto;
-import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransferRecipientDto;
-import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.ApiResponse;
-import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.BankListResponseDto;
-import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransactionInitResponseDto;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.*;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Transaction;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Wallet;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums.TransactionType;
@@ -23,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -53,10 +51,11 @@ public class TransactionServiceImpl implements TransactionService {
         String url = "https://api.paystack.co/transaction/initialize";
        transactionDto.setAmount(transactionDto.getAmount() + "00");
 
-        //Set headers for querying Paystack's end points
+        //Set headers for querying Paystack's endpoints
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
 
         HttpEntity <InitiateTransactionDto> entity = new HttpEntity<>(transactionDto, httpHeaders);
         return restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class).getBody();
@@ -67,17 +66,17 @@ public class TransactionServiceImpl implements TransactionService {
     public ApiResponse<TransactionInitResponseDto> verifyTransaction(String reference) {
         String url = "https://api.paystack.co/transaction/verify/ " + reference;
 
-        //Set headers for querying Paystack's end points
+        //Set headers for querying Paystack's endpoints
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity entity = new HttpEntity(httpHeaders);
 
-     ResponseEntity<ApiResponse> responseDto =
+     ResponseEntity<ApiResponse> apiResponse =
               restTemplate.exchange(url, HttpMethod.GET, entity, ApiResponse.class);
 
      TransactionInitResponseDto responseData =
-             appUtil.getMapper().convertValue(Objects.requireNonNull(responseDto.getBody()).getData(), TransactionInitResponseDto.class);
+             appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransactionInitResponseDto.class);
 
       responseData.setAmount(responseData.getAmount().divide(new BigDecimal(100), 2, RoundingMode.DOWN));
          appUtil.print("Initiate transaction response data " + responseData);
@@ -98,7 +97,27 @@ public class TransactionServiceImpl implements TransactionService {
         return new ApiResponse<>(responseData.getStatus(),
                 responseData.getGateway_response().equalsIgnoreCase("success"), responseData);
     }
-//==========================transfer=======================================================================//
+
+    @Override
+    public Page<TransactionInitResponseDto> listTransactions(int page, int limit, String sortBy, String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                :Sort.by(sortBy).descending();
+        Pageable pageableRequest = PageRequest.of(page, limit, sort);
+
+      Page <Transaction> transactions = transactionRepository.findAll(pageableRequest);
+      List<TransactionInitResponseDto> transactionList = transactions.stream()
+              .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
+              .collect(Collectors.toList());
+
+      //page number is zero by default so adapt accordingly
+        if (page > 0) page = page -1;
+        int max = Math.min(limit * (page + 1), transactionList.size());
+        int min = page * limit;
+        return new PageImpl<>(transactionList.subList(min, max), pageableRequest, transactionList.size());
+    }
+
+    //=============================================transfer==================================================//
     @Override
     public ApiResponse<List<BankDto>> fetchBanks(String currency, String type) {
 
