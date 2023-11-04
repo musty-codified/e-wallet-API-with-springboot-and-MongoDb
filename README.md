@@ -2,20 +2,19 @@
 The backend api for a digital wallet application that uses MongoDB as the database.
 The application enable users to create and manage their digital wallet, add funds to it, and make transactions.
 
-
 `Built with Spring Boot, secured with Spring Security (JWT), documented with Swagger (API),
 containerized with Docker, deployed on an AWS EC2 instance.`
 
-## Technology ##
+## Technology  used##
 Following tools and libraries were used during the development of the API :
-- **Java 17** - Java version
-- **Spring Boot** - Server-side framework
+- **Java 17** -
+- **Spring Boot** 
 - **Build Tool: Maven**
-- **MongoDB** - NoSQLDatabase
+- **MongoDB** 
 - **Swagger** - API documentation [here](http://localhost:9090/swagger-ui/index.html#/)
-- **JWT** - Authentication mechanism for REST APIs
-- **Docker** - Containerizing framework
-- **Memcached** - distributed memory-caching service
+- **JWT** 
+- **Docker**
+- **Memcached**
 
 
 ### Authentication and Authorization
