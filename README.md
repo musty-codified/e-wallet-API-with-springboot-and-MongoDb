@@ -5,7 +5,7 @@ The application enable users to create and manage their digital wallet, add fund
 `Built with Spring Boot, secured with Spring Security (JWT), documented with Swagger (API),
 containerized with Docker, deployed on an AWS EC2 instance.`
 
-## Technology  used##
+## Technology  used ##
 Following tools and libraries were used during the development of the API :
 - **Java 17** -
 - **Spring Boot** 
