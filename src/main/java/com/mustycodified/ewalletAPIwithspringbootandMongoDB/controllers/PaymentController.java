@@ -7,6 +7,7 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.FundTr
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.InitiateTransactionDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.ApiResponse;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransactionInitResponseDto;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.TransferRecipientDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.services.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -94,5 +95,12 @@ public class PaymentController {
     @PostMapping("withdrawal/send-money")
     public ResponseEntity<ApiResponse<TransactionInitResponseDto>> initiateTransfer(@RequestBody FundTransferDto fundTransferDto){
         return ResponseEntity.ok(transactionService.initiateTransfer(fundTransferDto));
+    }
+
+    @Operation(summary = "Fetch list of transfer recipients" )
+    @PostMapping("withdrawal/list-transfer-recipients")
+    public ResponseEntity<Page<TransferRecipientDto>> listTransferRecipients(@RequestParam(value = "perPage", defaultValue = "50") int perPage,
+                                                                             @RequestParam(value = "page", defaultValue = "1") int page){
+        return ResponseEntity.ok(transactionService.listTransferRecipient(perPage, page));
     }
 }
