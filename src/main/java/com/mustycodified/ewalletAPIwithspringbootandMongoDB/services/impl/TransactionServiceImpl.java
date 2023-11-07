@@ -124,7 +124,6 @@ public class TransactionServiceImpl implements TransactionService {
         //((type == null)? "": "&type="+type)
         String url = "https://api.paystack.co/bank" + currency+((type == null)? "": "&type="+type);
 
-
         HttpEntity entity = new HttpEntity<>(headers);
 
         ResponseEntity<BankListResponseDto> apiResponse =

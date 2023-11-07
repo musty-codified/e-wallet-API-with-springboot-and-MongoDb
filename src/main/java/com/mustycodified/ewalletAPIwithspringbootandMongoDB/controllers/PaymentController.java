@@ -39,7 +39,6 @@ import java.util.List;
         "<li>After initiating your withdrawal, you will receive an error code response because the payment was a test payment.</li>" +
         "</ol> "
 
-
 )
 public class PaymentController {
 
