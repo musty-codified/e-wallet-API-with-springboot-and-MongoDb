@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {
-
     private final LocalMemStorage memStorage;
     private final UserRepository userRepository;
 
@@ -84,7 +83,9 @@ public class JwtUtils {
 
     public Boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
+        System.out.println(username);
         if (memStorage.keyExist("Blacklist")) {
+            System.out.println("blacklist");
             String[] blacklistTokens = memStorage.getValueByKey("Blacklist").split(" ,");
             Set<String> blacklists = Arrays.stream(blacklistTokens).collect(Collectors.toSet());
             if (blacklists.contains(token)) {

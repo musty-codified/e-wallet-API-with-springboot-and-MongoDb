@@ -9,7 +9,6 @@ public interface UserService {
     String sendToken(String userEmail, String mailSubject);
     UserResponseDto login(UserLoginDto userLoginDto);
     String resetPassword(ChangePasswordDto changePasswordDto);
-//    UserResponseDto updatePassword(ChangePasswordDto changePasswordDto);
     UserResponseDto updatePassword(UpdatePasswordDto updatePasswordDto);
     String logout(String token);
 

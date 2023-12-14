@@ -2,8 +2,6 @@ package com.mustycodified.ewalletAPIwithspringbootandMongoDB.security;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,9 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,10 +28,6 @@ public class WebSecurityConfig {
     private static final String [] WHITE_LISTED_URLS = {
             "/api/v1/auth/**",
             SecurityConstants.SIGN_UP_URL,
-            SecurityConstants.UPDATE_PASSWORD_URL,
-            SecurityConstants.LOG_TRANSACTION_URL,
-            SecurityConstants.TRANSFER_RECIPIENT_URL,
-            SecurityConstants.CONFIRM_RECIPIENT_URL,
             "/v3/api-docs/**", "/configuration/**", "/swagger*/**", "/swagger-ui/**", "/webjars/**"
     };
 
@@ -73,7 +65,6 @@ public class WebSecurityConfig {
         };
     }
 
-    //This bean configuration is needed for user authentication process a.k.a. user login feature
     @Bean
     public AuthenticationProvider authenticationProvider(){
         final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

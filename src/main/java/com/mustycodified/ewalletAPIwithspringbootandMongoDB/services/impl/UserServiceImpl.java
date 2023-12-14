@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -47,9 +46,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LocalMemStorage memStorage;
     private final EmailServiceImpl emailService;
-
     private final MongoTemplate mongoTemplate;
-
     private final CustomUserDetailService customUserDetailService;
 
     private final JwtUtils jwtUtil;
@@ -58,12 +55,10 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public UserResponseDto signup(UserSignupDto userDto) {
-
-        //Validate registrant
         if (!appUtil.validEmail(userDto.getEmail())) {
             throw new ValidationException("Invalid email format {"+userDto.getEmail()+"}");
         }
@@ -77,16 +72,15 @@ public class UserServiceImpl implements UserService {
         newUser.setUuid(userId);
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         newUser.setPhoneNumber((appUtil.getFormattedNumber(userDto.getPhoneNumber())));
-        //map(x->Objects.toString(x))
         newUser.setRoles(Roles.ROLE_USER.getAuthorities().stream().map(Objects::toString).collect(Collectors.joining(",")));
         newUser.setStatus(Status.INACTIVE.name());
 
-        //Remember Registrant
         newUser = userRepository.save(newUser);
 
-        sendToken(newUser.getEmail(), "Activate your account");
+        sendToken(newUser.getEmail(), "activate your account");
 
-        return appUtil.getMapper().convertValue(newUser, UserResponseDto.class);    }
+        return appUtil.getMapper().convertValue(newUser, UserResponseDto.class);
+    }
 
     @Override
     public UserResponseDto activateUser(ActivateUserDto activateUserDto) {
@@ -99,8 +93,8 @@ public class UserServiceImpl implements UserService {
 
         Wallet newWallet = Wallet.builder()
                 .balance(BigDecimal.ZERO)
-                .email(userToActivate.getEmail())
-                .walletUUID(appUtil.generateSerialNumber("0"))
+                .email(activateUserDto.getEmail())
+                .walletUUID(appUtil.generateSerialNumber("xyz"))
                 .build();
         walletRepository.save(newWallet);
 
@@ -117,14 +111,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String sendToken(String userEmail, String mailSubject) {
-        //Input validation
         if (!userRepository.existsByEmail(userEmail))
             throw new ValidationException("User with email: " + userEmail + " does not exists");
 
             String otp = appUtil.generateSerialNumber("otp");
             memStorage.save(userEmail, otp, 900); //expires in 15mins
 
-        //Send email
         MailDto mailDto = MailDto.builder()
                 .to(userEmail)
                 .subject(mailSubject.toUpperCase())
@@ -138,10 +130,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto login(UserLoginDto creds) {
-       //Validate user credentials
         if(!appUtil.validEmail(creds.getEmail()))
             throw new ValidationException("Invalid email");
-        logger.info("email : " + creds.getEmail());
 
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -156,10 +146,8 @@ public class UserServiceImpl implements UserService {
                 if (user.getStatus().equals(Status.INACTIVE.name()))
                     throw new ValidationException("User not active. Please activate your account.");
 
-                logger.info("Generating access token for {}", user.getEmail());
-
+                LOGGER.info("Generating access token for {}", user.getEmail());
                 String accessToken = jwtUtil.generateToken(customUserDetailService.loadUserByUsername(user.getEmail()));
-
                 Query query = new Query(Criteria.where("email").is(user.getEmail()));
                 Update update = new Update().set("lastLoginDate", new Date());
                 mongoTemplate.updateFirst(query, update, User.class);
@@ -203,7 +191,6 @@ public class UserServiceImpl implements UserService {
 
         blacklistToken(updatePasswordDto.getVerificationToken());
 
-       //Retrieve the details of the currently authenticated user
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String newToken = jwtUtil.generateToken(userDetails);
 
@@ -222,7 +209,6 @@ public class UserServiceImpl implements UserService {
         blacklistToken(headerToken);
         return "Logout successful";
     }
-
     private void validateOTP(String memCachedKey, String value){
         if (!userRepository.existsByEmail(memCachedKey))
             throw new NotFoundException("User not found");
@@ -230,14 +216,10 @@ public class UserServiceImpl implements UserService {
         if (!appUtil.validEmail(memCachedKey))
             throw new ValidationException("Invalid email");
 
-          //Get the otp associated with the key
         String cachedOTP = memStorage.getValueByKey(memCachedKey);
 
-        //Check if otp has expired
         if(cachedOTP == null)
             throw new ValidationException("OTP expired");
-
-        //Check if otp stored in memcached == otp provided by user
         if(!cachedOTP.equals(value))
             throw new ValidationException("Invalid OTP");
 

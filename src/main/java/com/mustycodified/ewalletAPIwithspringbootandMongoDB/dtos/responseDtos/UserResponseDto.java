@@ -18,10 +18,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserResponseDto {
 
-    @Schema(description = "unique user ID")
+    @Schema(description = "ID")
     private String uuid;
 
-    @Schema(description = "User email")
+    @Schema(description = "email")
     private String email;
 
     @Schema(description = "first name")
@@ -39,6 +39,6 @@ public class UserResponseDto {
     @Schema(description = "state of origin")
     private String state;
 
-    @Schema(description = "authorization token")
+    @Schema(description = "JWT")
     private String token;
 }

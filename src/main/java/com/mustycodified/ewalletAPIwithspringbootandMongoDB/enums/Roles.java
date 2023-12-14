@@ -26,7 +26,6 @@ public enum Roles {
     class Testing {
         public static void main(String[] args) {
             System.out.println(Roles.ROLE_USER.getAuthorities().stream().map(Objects::toString).collect(Collectors.joining(",")));
-            System.out.println(Roles.ROLE_USER.getAuthorities().stream().map(r->Objects.toString(r)).collect(Collectors.joining(",")));
         }
 }
 }

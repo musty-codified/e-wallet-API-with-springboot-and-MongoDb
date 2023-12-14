@@ -13,16 +13,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
     private final UserService userService;
 
     @Operation(summary = "Resend account activation token or password reset token",
@@ -30,7 +26,7 @@ public class AuthController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OTP sent successfully")
 
     @PostMapping("/resend-token")
-    public ResponseEntity<ApiResponse<String>> resendToken(String userEmail, String mailSubject){
+    public ResponseEntity<ApiResponse<String>> resendToken(@RequestParam String userEmail, @RequestParam String mailSubject){
       return ResponseEntity.ok(new ApiResponse<>("token sent", true, userService.sendToken(userEmail, mailSubject)));
     }
     @Operation(summary = "Activates a newly created account or an inactive account after token confirmation", description = "Once activated, you can then login using the 'login' endpoint.\n" + "To proceed, ensure that you enter the complete OTP sent to your email.")

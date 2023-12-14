@@ -36,7 +36,7 @@ public class UserSignupDto {
     private String state;
 
     @NotNull
-    @Schema(description = "home address", example = "Ilara road, Ilisan")
+    @Schema(description = "home address", example = "Ilara road, Ilisan Remo")
     private String homeAddress;
 
     @NotNull

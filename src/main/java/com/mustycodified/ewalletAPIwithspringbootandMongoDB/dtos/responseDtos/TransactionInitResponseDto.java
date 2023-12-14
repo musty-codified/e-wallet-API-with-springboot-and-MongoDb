@@ -20,11 +20,9 @@ public class TransactionInitResponseDto {
     private String id;
     private String reference;
     private BigDecimal amount;
-    //!
     private String status;
     private String domain;
     private Customer customer;
-    //!
     private String gateway_response;
     private String message;
     private String channel;

@@ -1,4 +1,4 @@
-package com.mustycodified.ewalletAPIwithspringbootandMongoDB.controllers;
+package com.mustycodified.ewalletAPIwithspringbootandMongoDB.controllers.consumers;
 
 
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.AccountDto;
@@ -23,12 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payments")
 
-@Tag(name = "Payment Endpoint", description = "<h3>To deposit: </h3> " +
+@Tag(name = "Payment Endpoints", description = "<h3>To deposit: </h3> " +
         "<ol>" +
         "<li>Go to '/deposit/initiate' endpoint and enter your details. The <b>callbackUrl</b> and <b>metadata</b> fields are optional. " +
-        "just leave them be</li> " +
         "<li>Copy the payment link returned in the response object to any browser to make your payment.</li>" +
-        "<li>Copy the reference code returned if it was successful and go to '/verify/{payment_reference}' endpoint to verify if your deposit was successful.</li>" +
+        "<li>Copy the reference code returned if payment was successful and go to '/verify/{payment_reference}' endpoint to verify.</li>" +
         "</ol> " +
         "<h3> For withdrawal which is implemented as transfer:</h3> " +
         "<ol> " +
@@ -49,7 +48,7 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<String>> getPaymentUrl(@RequestBody InitiateTransactionDto transactionDto){
         return ResponseEntity.ok(transactionService.initiateTransaction(transactionDto));
     }
-    @Operation(summary = "Verifies the success or failure of a transaction")
+    @Operation(summary = "Verifies the status of a transaction")
     @GetMapping ("/verify/{payment_reference}")
     public ResponseEntity<ApiResponse<TransactionInitResponseDto>> confirmPayment(
             @Parameter(description = "Use the reference number generated when the transaction was initiated")
@@ -57,27 +56,26 @@ public class PaymentController {
         return ResponseEntity.ok(transactionService.verifyTransaction(payment_reference));
     }
 
-
+    @Operation(summary = "list all transactions carried out on the integration")
     @GetMapping("/wallet/transactions")
     public ResponseEntity<Page<TransactionInitResponseDto>> listTransactions(@RequestParam(value = "page", defaultValue = "0") int page,
                                                                              @RequestParam(value = "limit", defaultValue = "5") int limit,
                                                                              @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
                                                                              @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir){
-
         return ResponseEntity.ok(transactionService.listTransactions(page, limit, sortBy, sortDir));
 
     }
 
-    //   ========================================= Transfer transactions ==========================================  //
+    //========================================Transfer transactions=================================//
     @Operation(summary = "Fetches list of supported banks that are active in a country")
     @GetMapping("/banks")
     public ResponseEntity<ApiResponse<List<BankDto>>> fetchBanks(
             @Parameter(description = "NGN for Nigeria, GHS for Ghana etc") @RequestParam (name = "currency") String currency,
-            @Parameter(description = "(Optional) enter nuban or mobile money etc") @RequestParam(name = "type") String type){
+            @Parameter(description = "(Optional) enter nuban or mobile money etc") @RequestParam(name = "type", required = false) String type){
         return ResponseEntity.ok(transactionService.fetchBanks(currency, type));
     }
 
-    @Operation(summary = "Confirm the authenticity of recipient's account before making transfers")
+    @Operation(summary = "Verify recipient's account before making transfers")
     @GetMapping("/validate-account-details")
     public ResponseEntity<ApiResponse<AccountDto>> verifyAccountDetails(
             @Parameter(description = "10 digits account number") @RequestParam (name = "account_number") String accountNumber,
@@ -85,19 +83,19 @@ public class PaymentController {
         return ResponseEntity.ok(transactionService.resolveBankDetails(accountNumber, bankCode));
     }
 
-    @Operation(summary = "Before sending money to an account you need to create a transfer recipient with the beneficiary's account details")
+    @Operation(summary = "Before sending money to an account you need to create a recipient with account details")
     @PostMapping("/withdrawal/create-transfer-recipient")
     public ResponseEntity<ApiResponse<FundTransferDto>> createTransferRecipient(@RequestBody AccountDto accountDto){
         return ResponseEntity.ok(transactionService.createTransferRecipient(accountDto));
     }
-    @Operation(summary = "Send money to an account" )
+    @Operation(summary = "Send money to a customer account" )
     @PostMapping("withdrawal/send-money")
     public ResponseEntity<ApiResponse<TransactionInitResponseDto>> initiateTransfer(@RequestBody FundTransferDto fundTransferDto){
         return ResponseEntity.ok(transactionService.initiateTransfer(fundTransferDto));
     }
 
     @Operation(summary = "Fetch list of transfer recipients" )
-    @PostMapping("withdrawal/list-transfer-recipients")
+    @GetMapping("withdrawal/list-transfer-recipients")
     public ResponseEntity<Page<TransferRecipientDto>> listTransferRecipients(@RequestParam(value = "perPage", defaultValue = "50") int perPage,
                                                                              @RequestParam(value = "page", defaultValue = "1") int page){
         return ResponseEntity.ok(transactionService.listTransferRecipient(perPage, page));

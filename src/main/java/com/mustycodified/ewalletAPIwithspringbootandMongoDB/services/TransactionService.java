@@ -15,10 +15,10 @@ public interface TransactionService {
 
     ApiResponse<String> initiateTransaction(InitiateTransactionDto transactionDto);
     ApiResponse <TransactionInitResponseDto> verifyTransaction(String reference);
-
     Page<TransactionInitResponseDto> listTransactions(int perPage, int page, String sortBy, String sortDir);
 
     ApiResponse<List<BankDto>> fetchBanks(String currency, String type);
+    ApiResponse<List<TransactionInitResponseDto>> listPaystackTrans(int perPage, int page);
 
     ApiResponse<FundTransferDto> createTransferRecipient(AccountDto accountDto);
 

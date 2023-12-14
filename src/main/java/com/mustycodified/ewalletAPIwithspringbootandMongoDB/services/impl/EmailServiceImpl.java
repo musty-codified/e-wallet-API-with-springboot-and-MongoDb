@@ -16,25 +16,15 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
-
     private final JavaMailSender javaMailSender;
-
     private final AppUtils appUtil;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
     private static final Marker IMPORTANT = MarkerFactory.getMarker("IMPORTANT");
-
 
     @Override
     public ResponseEntity<String> sendMail(MailDto mailDto) {
@@ -62,7 +52,5 @@ public class EmailServiceImpl implements EmailService {
         }
         return new ResponseEntity<>("An Error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
 
 }

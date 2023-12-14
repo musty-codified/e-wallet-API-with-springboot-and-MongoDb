@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  api:
+    container_name: api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment :
+      APP_DB: docker
+      SPRING_DATA_MONGODB_URI: mongodb://root:password@db:27017/?authSource=admin&authMechanism=SCRAM-SHA-1
+      SPRING_DATA_MONGODB_DATABASE: walletDB
+      MEMCACHED_SERVICE_HOST: memcached_container
+      PAYSTACK_SECRETKEY: sk_test_55d2be3f104583697bd6410d40656c34350db331
+      APP_JWTSECRET: f9i4gu83nfl0jk379kpapimaciano94uwillywonkers
+    ports:
+      - "9090:9090"
+    depends_on:
+     - db
+    networks:
+      springboot-mongo-net:
+    restart: on-failure
+
+  db:
+    container_name: db
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: walletDB
+    networks:
+        springboot-mongo-net:
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://root:password@db:27017/
+    networks:
+      springboot-mongo-net:
+
+  memcached_container:
+    container_name: memcached_container
+    image: memcached
+    ports:
+      - "11211:11211"
+    networks:
+      springboot-mongo-net:
+    restart: always
+
+volumes:
+  mongodb_data_container:
+
+networks:
+  springboot-mongo-net:
+

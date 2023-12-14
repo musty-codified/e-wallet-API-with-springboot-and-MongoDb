@@ -23,15 +23,15 @@ import java.net.URI;
 public class UserController {
     private final UserService userService;
 
-    @Operation(summary = "Create and store new user account web service endpoint",
-            description = "Creates and stores a user object in the database. After creating your account, an OTP will be sent to your provided email" +
+    @Operation(summary = "Create a new user account",
+            description = "After creating your account, an OTP will be sent to your provided email" +
             "\n.Copy the code from you email and enter it in the 'activate-user endpoint'. \n")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Successfully created a user")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@RequestBody UserSignupDto userDto){
        UserResponseDto userResponseDto = userService.signup(userDto);
        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-               .path("{uuid}")
+               .path("/{uuid}")
                .buildAndExpand(userResponseDto.getUuid())
                .toUri();
        return ResponseEntity.created(location).body(new ApiResponse<>("Signup successful", true, userResponseDto));
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok().body(new ApiResponse<>("Password updated successfully", true, userService.updatePassword(changePasswordDto)));
     }
 
-    @Operation(summary = "Log out of the system by blacklisting the users token")
+    @Operation(summary = "Blacklist the users token, hence logging them out")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Logout successful")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String token){

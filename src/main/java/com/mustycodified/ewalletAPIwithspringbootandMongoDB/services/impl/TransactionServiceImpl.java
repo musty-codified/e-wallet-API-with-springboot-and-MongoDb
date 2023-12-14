@@ -18,8 +18,6 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.utils.LocalMemStorag
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -31,7 +29,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
@@ -40,36 +37,55 @@ public class TransactionServiceImpl implements TransactionService {
     private final LocalMemStorage localMemStorage;
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
-
     private final WalletRepository walletRepository;
-    @Value("${api.paystack_secret}")
-    private String apiKey;
-
+    private final HttpHeaders httpHeaders;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    //Set headers for querying Paystack's endpoints
-    private HttpHeaders getHttpHeaders(){
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + apiKey);
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return httpHeaders;
+    @Override
+    public ApiResponse<List<TransactionInitResponseDto>> listPaystackTrans(int perPage, int page) {
+
+        String url = "https://api.paystack.co/transaction" + perPage + ((page == 0)?"": "&page="+page);
+
+        if(page>0) page = page-1;
+
+        Pageable pageable = PageRequest.of(perPage, page);
+        Page<Transaction> transactionListPage = transactionRepository.findAll(pageable);
+
+        List<Transaction> transactions = transactionListPage.getContent();
+        HttpEntity entity = new HttpEntity(httpHeaders);
+
+        ResponseEntity<TransactionListDto> apiResponse =
+   restTemplate.exchange(url, HttpMethod.GET, entity, TransactionListDto.class);
+
+        List<TransactionInitResponseDto> responseData =
+                Objects.requireNonNull(transactions.stream()
+                        .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
+                        .collect(Collectors.toList()));
+        return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), responseData);
     }
 
-    final HttpHeaders headers = getHttpHeaders();
+
     @Override
     public ApiResponse initiateTransaction(InitiateTransactionDto transactionDto) {
+
         String url = "https://api.paystack.co/transaction/initialize";
        transactionDto.setAmount(transactionDto.getAmount() + "00");
+        ApiResponse apiResponse = null;
+        HttpEntity <InitiateTransactionDto> entity = new HttpEntity<>(transactionDto, httpHeaders);
+        try{
+            apiResponse =
+                    restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class).getBody();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
-        HttpEntity <InitiateTransactionDto> entity = new HttpEntity<>(transactionDto, headers);
-        return restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class).getBody();
-
+        return apiResponse;
     }
 
     @Override
     public ApiResponse<TransactionInitResponseDto> verifyTransaction(String reference) {
         String url = "https://api.paystack.co/transaction/verify/ " + reference;
-        HttpEntity entity = new HttpEntity(headers);
+        HttpEntity entity = new HttpEntity(httpHeaders);
 
      ResponseEntity<ApiResponse> apiResponse =
               restTemplate.exchange(url, HttpMethod.GET, entity, ApiResponse.class);
@@ -104,7 +120,7 @@ public class TransactionServiceImpl implements TransactionService {
                 :Sort.by(sortBy).descending();
         Pageable pageableRequest = PageRequest.of(page, limit, sort);
 
-      Page <Transaction> transactions = transactionRepository.findAll(pageableRequest);
+      Page<Transaction> transactions = transactionRepository.findAll(pageableRequest);
 
       List<TransactionInitResponseDto> transactionList = transactions.stream()
               .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
@@ -123,11 +139,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         //((type == null)? "": "&type="+type)
         String url = "https://api.paystack.co/bank" + currency+((type == null)? "": "&type="+type);
-
-        HttpEntity entity = new HttpEntity<>(headers);
-
+        System.out.println(url);
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
+       appUtil.print(entity);
         ResponseEntity<BankListResponseDto> apiResponse =
                 restTemplate.exchange(url, HttpMethod.GET, entity, BankListResponseDto.class);
+        System.out.println(apiResponse);
+
         List<BankDto> bankList = Objects.requireNonNull(apiResponse.getBody()).getData().stream()
                 .map(bank -> appUtil.getMapper().convertValue(bank, BankDto.class))
                 .filter(BankDto::isActive)
@@ -135,19 +153,20 @@ public class TransactionServiceImpl implements TransactionService {
         return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), bankList);
     }
 
+   // =======================================================================================//
     @Override
     public ApiResponse<FundTransferDto> createTransferRecipient(AccountDto accountDto) {
         String requestUrl = "https://api.paystack.co/transferrecipient";
 
-        HttpEntity<AccountDto> entity = new HttpEntity<>(accountDto, headers);
+        HttpEntity<AccountDto> entity = new HttpEntity<>(accountDto, httpHeaders);
 
-     ResponseEntity<ApiResponse<FundTransferDto>> apiResponse = null;
+     ResponseEntity<ApiResponse> apiResponse = null;
      try {
-      apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, new ParameterizedTypeReference<>() {});
+      apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
 
      } catch (Exception e){
          e.printStackTrace();
-         logger.error("error getting response from paystack");
+         logger.error("error getting response from pay stack");
      }
         TransferRecipientDto transferRecipientDto =
              appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransferRecipientDto.class);
@@ -168,7 +187,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Page<TransferRecipientDto> listTransferRecipient(int perPage, int page) {
         String requestUrl = "https://api.paystack.co/transferrecipient";
 
-        HttpEntity entity = new HttpEntity<>(headers);
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
 
        ResponseEntity<TransferRecipientList>  apiResponse =
                restTemplate.exchange(requestUrl, HttpMethod.GET, entity, TransferRecipientList.class);
@@ -190,18 +209,19 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal balance = walletRepository.findByEmail(fundTransferDto.getEmail())
                 .map(Wallet::getBalance).orElse(BigDecimal.ZERO);
 
-        if(balance.compareTo(fundTransferDto.getAmount())<0)
+        if(balance.compareTo(fundTransferDto.getAmount()) < 0)
             throw new ValidationException("Insufficient balance");
 
         localMemStorage.clear(fundTransferDto.getRecipient_code());
 
         String requestUrl = "https://api.paystack.co/transfer";
 
-        HttpEntity entity = new HttpEntity<>(headers);
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
+
         ResponseEntity<ApiResponse> apiResponse =
                 restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
 
-        //map response to FundTransferDto
+        //map response to TransactionInitResponseDto
         TransactionInitResponseDto transactionInitResponseDto =
                 appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransactionInitResponseDto.class);
         transactionInitResponseDto.setTransactionType(TransactionType.TRANSACTION_TYPE_TRANSFER.getTransaction());
@@ -233,7 +253,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ApiResponse<AccountDto> resolveBankDetails(String accountNumber, String bankCode) {
         String requestUrl = "https://api.paystack.co/bank/resolve?account_number="+accountNumber +"&bank_code="+bankCode;
-        HttpEntity entity = new HttpEntity<>(headers);
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
 
         //Retrieve account details from Paystack 'bank resolve' API
         ResponseEntity<ApiResponse> apiResponse= null;
