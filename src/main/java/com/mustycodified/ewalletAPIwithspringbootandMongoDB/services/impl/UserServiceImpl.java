@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto login(UserLoginDto creds) {
+    public UserResponseDto  login(UserLoginDto creds) {
         if(!appUtil.validEmail(creds.getEmail()))
             throw new ValidationException("Invalid email");
 
