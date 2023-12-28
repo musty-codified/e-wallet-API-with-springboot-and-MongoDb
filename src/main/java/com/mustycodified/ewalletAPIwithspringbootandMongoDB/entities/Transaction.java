@@ -30,7 +30,7 @@ public class Transaction extends BaseEntity{
     private BigDecimal amount;
 
     private String currency;
-    //!
+
     private String status;
 
     private String domain;
@@ -42,6 +42,5 @@ public class Transaction extends BaseEntity{
     private String channel;
 
     private String ip_address;
-
 
 }

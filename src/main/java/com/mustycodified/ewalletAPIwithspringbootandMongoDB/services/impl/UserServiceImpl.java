@@ -89,6 +89,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         userToActivate.setStatus(Status.ACTIVE.name());
+
         UserResponseDto userResponseDto = appUtil.getMapper().convertValue(userRepository.save(userToActivate), UserResponseDto.class);
 
         Wallet newWallet = Wallet.builder()

@@ -24,8 +24,8 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Create a new user account",
-            description = "After creating your account, an OTP will be sent to your provided email" +
-            "\n.Copy the code from you email and enter it in the 'activate-user endpoint'. \n")
+            description = "After creating your account, an OTP will be sent to your provided email." +
+            "\n Copy the code and navigate to 'activate-user' endpoint. \n")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Successfully created a user")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@RequestBody UserSignupDto userDto){
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok().body(new ApiResponse<>("Password updated successfully", true, userService.updatePassword(changePasswordDto)));
     }
 
-    @Operation(summary = "Blacklist the users token, hence logging them out")
+    @Operation(summary = "Blacklist the users token")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Logout successful")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String token){

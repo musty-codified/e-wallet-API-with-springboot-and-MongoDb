@@ -28,6 +28,7 @@ public class TransactionInitResponseDto {
     private String channel;
     private String currency;
     private String transactionType;
+    private String transactionStatus;
     private String ip_address;
 
 }

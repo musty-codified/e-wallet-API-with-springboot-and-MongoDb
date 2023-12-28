@@ -18,12 +18,12 @@ public interface TransactionService {
     Page<TransactionInitResponseDto> listTransactions(int perPage, int page, String sortBy, String sortDir);
 
     ApiResponse<List<BankDto>> fetchBanks(String currency, String type);
+
     ApiResponse<List<TransactionInitResponseDto>> listPaystackTrans(int perPage, int page);
 
     ApiResponse<FundTransferDto> createTransferRecipient(AccountDto accountDto);
 
     Page<TransferRecipientDto> listTransferRecipient(int perPage, int page);
-
 
     TransactionInitResponseDto saveTransaction(TransactionInitResponseDto transactionDto);
 

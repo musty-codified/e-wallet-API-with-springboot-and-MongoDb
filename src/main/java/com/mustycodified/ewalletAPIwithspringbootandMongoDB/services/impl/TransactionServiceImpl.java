@@ -7,7 +7,9 @@ import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.Initia
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.*;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Transaction;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities.Wallet;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums.TransactionStatus;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.enums.TransactionType;
+import com.mustycodified.ewalletAPIwithspringbootandMongoDB.exceptions.NotFoundException;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.exceptions.ValidationException;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.repositories.TransactionRepository;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.repositories.WalletRepository;
@@ -41,44 +43,18 @@ public class TransactionServiceImpl implements TransactionService {
     private final HttpHeaders httpHeaders;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    @Override
-    public ApiResponse<List<TransactionInitResponseDto>> listPaystackTrans(int perPage, int page) {
 
-        String url = "https://api.paystack.co/transaction" + perPage + ((page == 0)?"": "&page="+page);
-
-        if(page>0) page = page-1;
-
-        Pageable pageable = PageRequest.of(perPage, page);
-        Page<Transaction> transactionListPage = transactionRepository.findAll(pageable);
-
-        List<Transaction> transactions = transactionListPage.getContent();
-        HttpEntity entity = new HttpEntity(httpHeaders);
-
-        ResponseEntity<TransactionListDto> apiResponse =
-   restTemplate.exchange(url, HttpMethod.GET, entity, TransactionListDto.class);
-
-        List<TransactionInitResponseDto> responseData =
-                Objects.requireNonNull(transactions.stream()
-                        .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
-                        .collect(Collectors.toList()));
-        return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), responseData);
-    }
-
-
+//    =================================deposit actions===================//
     @Override
     public ApiResponse initiateTransaction(InitiateTransactionDto transactionDto) {
 
         String url = "https://api.paystack.co/transaction/initialize";
        transactionDto.setAmount(transactionDto.getAmount() + "00");
-        ApiResponse apiResponse = null;
-        HttpEntity <InitiateTransactionDto> entity = new HttpEntity<>(transactionDto, httpHeaders);
-        try{
-            apiResponse =
-                    restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class).getBody();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
 
+        HttpEntity <InitiateTransactionDto> entity = new HttpEntity<>(transactionDto, httpHeaders);
+
+            ApiResponse apiResponse =
+                    restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class).getBody();
         return apiResponse;
     }
 
@@ -104,17 +80,37 @@ public class TransactionServiceImpl implements TransactionService {
                 walletService.updateWallet(responseData.getCustomer().getEmail(), responseData.getAmount());
             }
 
-            //save transaction to DB for transaction history purposes
+            //save transaction to DB for transaction history purposes.
             responseData.setTransactionType(TransactionType.TRANSACTION_TYPE_DEPOSIT.getTransaction());
+            responseData.setTransactionStatus(TransactionStatus.COMPLETED.name());
             this.saveTransaction(responseData);
         }
 
         return new ApiResponse<>(responseData.getStatus(),
-                responseData.getGateway_response().equalsIgnoreCase("success"), responseData);
+                responseData.getGateway_response().equalsIgnoreCase("successful"), responseData);
     }
 
     @Override
-    public Page<TransactionInitResponseDto> listTransactions(int page, int limit, String sortBy, String sortDir) {
+    public ApiResponse<List<TransactionInitResponseDto>> listPaystackTrans(int perPage, int page) {
+
+        String url = "https://api.paystack.co/transaction" + perPage + ((page == 0)?"": "&page="+page);
+
+        HttpEntity entity = new HttpEntity(httpHeaders);
+
+        ResponseEntity<TransactionListDto> apiResponse =
+                restTemplate.exchange(url, HttpMethod.GET, entity, TransactionListDto.class);
+         appUtil.print(apiResponse);
+
+        List<TransactionInitResponseDto> responseData =
+                Objects.requireNonNull(apiResponse.getBody()).getData().stream()
+                        .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
+                        .collect(Collectors.toList());
+        return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), responseData);
+    }
+
+
+    @Override
+    public Page<TransactionInitResponseDto>listTransactions(int page, int limit, String sortBy, String sortDir) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 :Sort.by(sortBy).descending();
@@ -122,7 +118,7 @@ public class TransactionServiceImpl implements TransactionService {
 
       Page<Transaction> transactions = transactionRepository.findAll(pageableRequest);
 
-      List<TransactionInitResponseDto> transactionList = transactions.stream()
+        List<TransactionInitResponseDto> transactionList = transactions.stream()
               .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
               .collect(Collectors.toList());
 
@@ -133,15 +129,13 @@ public class TransactionServiceImpl implements TransactionService {
         return new PageImpl<>(transactionList.subList(min, max), pageableRequest, transactionList.size());
     }
 
-    //==============================================transfer==================================================//
-    @Override
-    public ApiResponse<List<BankDto>> fetchBanks(String currency, String type) {
+    //==============================================Transfer actions=======================================//
 
-        //((type == null)? "": "&type="+type)
-        String url = "https://api.paystack.co/bank" + currency+((type == null)? "": "&type="+type);
-        System.out.println(url);
+    public ApiResponse<List<BankDto>> fetchBanks(String currency, String type) {
+        String url = "https://api.paystack.co/bank?&currency="+currency +((type == null)? "": "&type="+type);
+
         HttpEntity entity = new HttpEntity<>(httpHeaders);
-       appUtil.print(entity);
+        appUtil.print(entity);
         ResponseEntity<BankListResponseDto> apiResponse =
                 restTemplate.exchange(url, HttpMethod.GET, entity, BankListResponseDto.class);
         System.out.println(apiResponse);
@@ -160,14 +154,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         HttpEntity<AccountDto> entity = new HttpEntity<>(accountDto, httpHeaders);
 
-     ResponseEntity<ApiResponse> apiResponse = null;
-     try {
-      apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
+     ResponseEntity<ApiResponse> apiResponse =
+       restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
 
-     } catch (Exception e){
-         e.printStackTrace();
-         logger.error("error getting response from pay stack");
-     }
         TransferRecipientDto transferRecipientDto =
              appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransferRecipientDto.class);
 
@@ -204,7 +193,7 @@ public class TransactionServiceImpl implements TransactionService {
     public ApiResponse<TransactionInitResponseDto> initiateTransfer(FundTransferDto fundTransferDto) {
 
         if (!localMemStorage.keyExist(fundTransferDto.getRecipient_code())) {
-            throw new ValidationException("Transfer session has expired please try again");
+            throw new ValidationException("Transfer session expired. Kindly create transfer recipient ");
         }
         BigDecimal balance = walletRepository.findByEmail(fundTransferDto.getEmail())
                 .map(Wallet::getBalance).orElse(BigDecimal.ZERO);
@@ -216,10 +205,15 @@ public class TransactionServiceImpl implements TransactionService {
 
         String requestUrl = "https://api.paystack.co/transfer";
 
-        HttpEntity entity = new HttpEntity<>(httpHeaders);
+        HttpEntity<FundTransferDto> entity = new HttpEntity<>(fundTransferDto, httpHeaders);
 
-        ResponseEntity<ApiResponse> apiResponse =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
+        ResponseEntity<ApiResponse> apiResponse = null;
+        try {
+         apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
+
+        } catch (Exception e){
+            throw new NotFoundException(e.getMessage()+". Sorry about that. This is just a test API, but your transfer would be processed if this was a production app");
+        }
 
         //map response to TransactionInitResponseDto
         TransactionInitResponseDto transactionInitResponseDto =
@@ -256,19 +250,12 @@ public class TransactionServiceImpl implements TransactionService {
         HttpEntity entity = new HttpEntity<>(httpHeaders);
 
         //Retrieve account details from Paystack 'bank resolve' API
-        ResponseEntity<ApiResponse> apiResponse= null;
-        try{
-            apiResponse = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, ApiResponse.class);
-
-        } catch (Exception e){
-            e.printStackTrace();
-            logger.error("error getting paytack response");
-        }
+        ResponseEntity<ApiResponse> apiResponse =
+                restTemplate.exchange(requestUrl, HttpMethod.GET, entity, ApiResponse.class);
 
         //map response data to AccountDto
      AccountDto accountDto = appUtil.getMapper()
              .convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), AccountDto.class);
-        appUtil.print("response data: " + apiResponse );
 
         return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), accountDto);
     }

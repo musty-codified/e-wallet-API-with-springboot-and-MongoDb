@@ -21,16 +21,15 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final UserService userService;
 
-    @Operation(summary = "Resend account activation token or password reset token",
-            description = " Resends account activation token or reset password token. " + "Verification code will be sent to your provided email")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OTP sent successfully")
+    @Operation(summary = "Resend account activation token or password reset token", description = "Verification code will be sent to your provided email")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OTP resent successfully")
 
     @PostMapping("/resend-token")
     public ResponseEntity<ApiResponse<String>> resendToken(@RequestParam String userEmail, @RequestParam String mailSubject){
-      return ResponseEntity.ok(new ApiResponse<>("token sent", true, userService.sendToken(userEmail, mailSubject)));
+      return ResponseEntity.ok(new ApiResponse<>("token resent", true, userService.sendToken(userEmail, mailSubject)));
     }
-    @Operation(summary = "Activates a newly created account or an inactive account after token confirmation", description = "Once activated, you can then login using the 'login' endpoint.\n" + "To proceed, ensure that you enter the complete OTP sent to your email.")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Account activation successful")
+    @Operation(summary = "Activates a newly created account or an inactive account after token confirmation", description = "Once activated, you can then navigate to login route.\n" + "To proceed, ensure that you enter the complete OTP sent to your email.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Account activated successfully")
     @PostMapping("/activate-user")
     public ResponseEntity<ApiResponse<UserResponseDto>> activateUser(ActivateUserDto activateUserDto){
         return ResponseEntity.ok( new ApiResponse<>("User activated!", true, userService.activateUser(activateUserDto)));
@@ -40,7 +39,7 @@ public class AuthController {
     @ApiResponses(
             value = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "200", description = "Successful login. Returns a JWT token in the response header",
+                            responseCode = "200", description = "Successful login. Returns a JWT token in the response body",
                             content = @Content(schema = @Schema(implementation = UserResponseDto.class), mediaType = "application/json"),
                             headers = {@Header(name = "authorization", description = "Bearer <JWT value here>", schema = @Schema(type = "string"))}
                     )
@@ -52,7 +51,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Resets a password after a reset verification OTP has been confirmed",
-            description = "Before using this endpoint, ensure the verification OTP has been activated" + "Ensure that you enter the complete OTP sent to your email.")
+            description = "Before using this endpoint, ensure the verification OTP has been activated")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Password reset successful")
 
     @PostMapping("/reset-password")

@@ -1,6 +1,4 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB.controllers.consumers;
-
-
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.AccountDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.BankDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.FundTransferDto;
@@ -32,9 +30,9 @@ import java.util.List;
         "<h3> For withdrawal which is implemented as transfer:</h3> " +
         "<ol> " +
         "<li>Go to 'withdrawal/create-transfer-recipient' endpoint to create your Transfer recipient.</li> " +
-        "<p>You can use the <b>validate-account-details</b> endpoint to validate your account details and the " +
+        "<p>Use the <b>validate-account-details</b> endpoint to validate your account details and the " +
         "<b>banks</b> endpoint to see all available banks.</p>" +
-        "<li>Copy the <b>reference</b> code 'TRF_....' and the <b>recipient</b> code 'RCP_....' generated and go to 'withdrawal/send-money' endpoint.</li> " +
+        "<li>Copy the <b>reference</b> code 'TRF_....' and the <b>recipient</b> code 'RCP_....' generated and navigate to 'withdrawal/send-money'.</li> " +
         "<li>After initiating your withdrawal, you will receive an error code response because the payment was a test payment.</li>" +
         "</ol> "
 
@@ -48,7 +46,7 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<String>> getPaymentUrl(@RequestBody InitiateTransactionDto transactionDto){
         return ResponseEntity.ok(transactionService.initiateTransaction(transactionDto));
     }
-    @Operation(summary = "Verifies the status of a transaction")
+    @Operation(summary = "Verifies the status of payment after deposit has been made")
     @GetMapping ("/verify/{payment_reference}")
     public ResponseEntity<ApiResponse<TransactionInitResponseDto>> confirmPayment(
             @Parameter(description = "Use the reference number generated when the transaction was initiated")
@@ -66,11 +64,12 @@ public class PaymentController {
 
     }
 
+
     //========================================Transfer transactions=================================//
     @Operation(summary = "Fetches list of supported banks that are active in a country")
     @GetMapping("/banks")
     public ResponseEntity<ApiResponse<List<BankDto>>> fetchBanks(
-            @Parameter(description = "NGN for Nigeria, GHS for Ghana etc") @RequestParam (name = "currency") String currency,
+            @Parameter(description = "NGN for Nigeria, GHS for Ghana etc") @RequestParam (name = "currency", required = false) String currency,
             @Parameter(description = "(Optional) enter nuban or mobile money etc") @RequestParam(name = "type", required = false) String type){
         return ResponseEntity.ok(transactionService.fetchBanks(currency, type));
     }
@@ -88,13 +87,13 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<FundTransferDto>> createTransferRecipient(@RequestBody AccountDto accountDto){
         return ResponseEntity.ok(transactionService.createTransferRecipient(accountDto));
     }
-    @Operation(summary = "Send money to a customer account" )
+    @Operation(summary = "Send money to another account" )
     @PostMapping("withdrawal/send-money")
     public ResponseEntity<ApiResponse<TransactionInitResponseDto>> initiateTransfer(@RequestBody FundTransferDto fundTransferDto){
         return ResponseEntity.ok(transactionService.initiateTransfer(fundTransferDto));
     }
 
-    @Operation(summary = "Fetch list of transfer recipients" )
+    @Operation(summary = "Fetch list of all created transfer recipients" )
     @GetMapping("withdrawal/list-transfer-recipients")
     public ResponseEntity<Page<TransferRecipientDto>> listTransferRecipients(@RequestParam(value = "perPage", defaultValue = "50") int perPage,
                                                                              @RequestParam(value = "page", defaultValue = "1") int page){

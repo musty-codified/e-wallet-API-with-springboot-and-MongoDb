@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 @OpenAPIDefinition(
 		info=@Info(
 				title = "eWallet RESTful Web API Documentation",
-				description = "These pages document a electronic Wallet Restful Web Service Endpoints",
+				description = "These pages document an eWallet Restful Web Service Endpoints",
 				version = "1.0",
 				contact = @Contact(
 						name = "Musty-codified",
@@ -93,7 +93,6 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 //		mongoTemplate.dropCollection("transactions");
 //		mongoTemplate.dropCollection("wallets");
 //		mongoTemplate.dropCollection("users");
-
 	}
 
 }

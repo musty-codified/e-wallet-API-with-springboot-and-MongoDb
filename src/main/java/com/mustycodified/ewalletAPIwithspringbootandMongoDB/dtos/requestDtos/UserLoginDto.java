@@ -9,6 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLoginDto {
+    @Schema(description = "email", example = "ilemonamustapha@gmail.com")
     private String email;
+
+    @Schema(description = "password", example = "1994")
     private String password;
 }

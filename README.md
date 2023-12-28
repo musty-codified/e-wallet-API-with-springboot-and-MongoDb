@@ -29,13 +29,12 @@ The application can be deployed on any Java Servlet container, or docker contain
 * **Build the project using maven:** mvn clean install
 * **Run the application from the command line:** mvn spring-boot:run
 
-
 ## Running the service in a Docker Container ##
- An alternative to run the application is to use the docker-compose.yml file, which is used to run multi-containers (Microservices).
+* A better way to run the application is to use the docker-compose.yml file, which is used to run multi-containers (Microservices).
 * Simply download the [Docker compose file](https://github.com/musty-codified/e-Wallet-API-with-Springboot-and-MongoDB/blob/main/docker-compose.yml)
 * You can edit the file to your custom configurations
 * Then navigate to where the file is located on your terminal and run 'docker compose up'
-* Voilà! once the image downloads are completed and the application is running, you can then visit http://localhost:9090/swagger-ui/index.html to access the end points
+* Voilà! once the image downloads are completed and the application is running, you can then navigate to http://localhost:9090/swagger-ui/index.html to access the end points
 
 ### Note
 For security purpose, please make sure to set appropriate access controls for MongoDB.
@@ -44,8 +43,8 @@ For security purpose, please make sure to set appropriate access controls for Mo
 For any issues or queries, please raise a ticket on the GitHub repository or email me at ilemonamustapha@gmail.com.
 
 ## API Documentation ##
-The application exposes RESTful APIs for creating and managing digital wallets.
-It's as important to document (as is the development) and make your APIs available in a readable manner for frontend teams or external consumers.
+The application exposes RESTful APIs for creating and managing digital wallet accounts.
+It's as important to document (as is the development) and communicate your APIs in a readable manner to frontend teams or external consumers.
 The tool for API documentation used in this project is Swagger, you can open the same inside a browser at the following url - [here](http://localhost:9090/swagger-ui/index.html#/)
 
 
