@@ -132,7 +132,7 @@ public class TransactionServiceImpl implements TransactionService {
     //==============================================Transfer actions=======================================//
 
     public ApiResponse<List<BankDto>> fetchBanks(String currency, String type) {
-        String url = "https://api.paystack.co/bank?&currency="+currency +((type == null)? "": "&type="+type);
+        String url = "https://api.paystack.co/bank?currency="+currency +((type == null)? "": "&type="+type);
 
         HttpEntity entity = new HttpEntity<>(httpHeaders);
         appUtil.print(entity);
