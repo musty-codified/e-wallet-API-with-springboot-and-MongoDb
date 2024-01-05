@@ -135,7 +135,7 @@ public class TransactionServiceImpl implements TransactionService {
         String url = "https://api.paystack.co/bank?currency="+currency +((type == null)? "": "&type="+type);
 
         HttpEntity entity = new HttpEntity<>(httpHeaders);
-        appUtil.print(entity);
+//        appUtil.print(entity);
         ResponseEntity<BankListResponseDto> apiResponse =
                 restTemplate.exchange(url, HttpMethod.GET, entity, BankListResponseDto.class);
         System.out.println(apiResponse);

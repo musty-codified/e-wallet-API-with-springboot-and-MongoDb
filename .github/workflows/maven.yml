@@ -40,6 +40,33 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+          aws --version
+
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region us-east-1 
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk create-application-version 
+            --application-name E-Wallet-API 
+            --version-label ${{ github.sha }} 
+            --source-bundle S3Bucket=elasticbeanstalk, S3Key=https://github.com/musty-codified/e-wallet-API-with-springboot-and-MongoDb/$GITHUB_SHA.zip
+          
+          aws elasticbeanstalk update-environment 
+            --application-name E-Wallet-API 
+            --environment-name E-Wallet-API-env 
+            --version-label ${{ github.sha }}
 
 #      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
 #    - name: Update dependency graph

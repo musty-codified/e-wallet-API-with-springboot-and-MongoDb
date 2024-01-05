@@ -1,6 +1,5 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB.security;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +25,7 @@ public class WebSecurityConfig {
     private final CustomUserDetailService customUserDetailService;
     private final JwtAuthFilter jwtAuthFilter;
     private static final String [] WHITE_LISTED_URLS = {
+            "/",
             "/api/v1/auth/**",
             SecurityConstants.SIGN_UP_URL,
             "/v3/api-docs/**", "/configuration/**", "/swagger*/**", "/swagger-ui/**", "/webjars/**"
@@ -47,7 +47,6 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
