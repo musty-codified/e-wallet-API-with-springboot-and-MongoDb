@@ -58,7 +58,7 @@ jobs:
             region: us-east-1
 #            environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
             environment_name: Digital-WalletAPI-env
-            application_name: Digital-Wallet_API
+            application_name: e-wallet-API-with-springboot-and-MongoDB/Digital-Wallet_API
 #            application_name: ${{ env.EB_APPLICATION_NAME }}
             deployment_package: docker-compose.yml
 #            deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
