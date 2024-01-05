@@ -50,23 +50,19 @@ jobs:
           sudo apt-get install -y awscli
           aws --version
 
-      - name: Configure AWS credentials
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region us-east-1 
-
-      - name: Deploy to Elastic Beanstalk
-        run: |
-          aws elasticbeanstalk create-application-version 
-            --application-name E-Wallet-API 
-            --version-label ${{ github.sha }} 
-            --source-bundle S3Bucket=elasticbeanstalk, S3Key=https://github.com/musty-codified/e-wallet-API-with-springboot-and-MongoDb/$GITHUB_SHA.zip
-          
-          aws elasticbeanstalk update-environment 
-            --application-name E-Wallet-API 
-            --environment-name E-Wallet-API-env 
-            --version-label ${{ github.sha }}
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
+        with:
+            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            region: us-east-1
+#            environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
+            environment_name: Digital-WalletAPI-env
+            application_name: Digital-Wallet_API
+#            application_name: ${{ env.EB_APPLICATION_NAME }}
+            deployment_package: docker-compose.yml
+#            deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
+            version_label: v1.0.0
 
 #      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
 #    - name: Update dependency graph
