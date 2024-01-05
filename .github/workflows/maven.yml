@@ -60,7 +60,7 @@ jobs:
             environment_name: Digital-WalletAPI-env
             application_name: Digital-Wallet_API
 #            application_name: ${{ env.EB_APPLICATION_NAME }}
-            deployment_package: e-wallet-API-with-springboot-and-MongoDB/docker-compose.yml
+            source-bundle: S3Bucket=elasticbeanstalk, S3Key=https://github.com/musty-codified/e-wallet-API-with-springboot-and-MongoDb/$GITHUB_SHA.zip
 #            deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
             version_label: v1.0.0
 
