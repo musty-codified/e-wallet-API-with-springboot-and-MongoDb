@@ -44,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
 
-//    =================================deposit actions===================//
+      // =========================================Deposits========================= //
     @Override
     public ApiResponse initiateTransaction(InitiateTransactionDto transactionDto) {
 
@@ -80,7 +80,7 @@ public class TransactionServiceImpl implements TransactionService {
                 walletService.updateWallet(responseData.getCustomer().getEmail(), responseData.getAmount());
             }
 
-            //save transaction to DB for transaction history purposes.
+            //Store transaction details in DB for transaction history purposes.
             responseData.setTransactionType(TransactionType.TRANSACTION_TYPE_DEPOSIT.getTransaction());
             responseData.setTransactionStatus(TransactionStatus.COMPLETED.name());
             this.saveTransaction(responseData);
@@ -135,7 +135,6 @@ public class TransactionServiceImpl implements TransactionService {
         String url = "https://api.paystack.co/bank?currency="+currency +((type == null)? "": "&type="+type);
 
         HttpEntity entity = new HttpEntity<>(httpHeaders);
-//        appUtil.print(entity);
         ResponseEntity<BankListResponseDto> apiResponse =
                 restTemplate.exchange(url, HttpMethod.GET, entity, BankListResponseDto.class);
         System.out.println(apiResponse);
@@ -160,7 +159,7 @@ public class TransactionServiceImpl implements TransactionService {
         TransferRecipientDto transferRecipientDto =
              appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransferRecipientDto.class);
 
-        //create and save unique transfer reference in memcached for use while initiating the fund transfer
+        //Create and save unique transfer reference in memcached for use while initiating the fund transfer
      String uniqueTransferReference = appUtil.generateSerialNumber("TRF_");
         localMemStorage.save(transferRecipientDto.getRecipient_code(),
              uniqueTransferReference, 3600);
@@ -215,7 +214,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new NotFoundException(e.getMessage()+". Sorry about that. This is just a test API, but your transfer would be processed if this was a production app");
         }
 
-        //map response to TransactionInitResponseDto
+        //Map response to TransactionInitResponseDto
         TransactionInitResponseDto transactionInitResponseDto =
                 appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransactionInitResponseDto.class);
         transactionInitResponseDto.setTransactionType(TransactionType.TRANSACTION_TYPE_TRANSFER.getTransaction());

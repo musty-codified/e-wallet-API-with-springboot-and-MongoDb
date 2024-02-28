@@ -23,18 +23,17 @@ public class AuthController {
 
     @Operation(summary = "Resend account activation token or password reset token", description = "Verification code will be sent to your provided email")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OTP resent successfully")
-
     @PostMapping("/resend-token")
     public ResponseEntity<ApiResponse<String>> resendToken(@RequestParam String userEmail, @RequestParam String mailSubject){
       return ResponseEntity.ok(new ApiResponse<>("token resent", true, userService.sendToken(userEmail, mailSubject)));
     }
-    @Operation(summary = "Activates a newly created account or an inactive account after token confirmation", description = "Once activated, you can then navigate to login route.\n" + "To proceed, ensure that you enter the complete OTP sent to your email.")
+    @Operation(summary = "Activates a newly created account or an inactive account after token confirmation", description = "Once activated, navigate to login route.\n" + "To proceed, ensure that you enter the complete OTP sent to your email.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Account activated successfully")
     @PostMapping("/activate-user")
-    public ResponseEntity<ApiResponse<UserResponseDto>> activateUser(ActivateUserDto activateUserDto){
+    public ResponseEntity<ApiResponse<UserResponseDto>> activateUser(@RequestBody ActivateUserDto activateUserDto){
         return ResponseEntity.ok( new ApiResponse<>("User activated!", true, userService.activateUser(activateUserDto)));
     }
-    @Operation(summary = "Generates a JWT token upon successful login that will be used for Authorizations",
+    @Operation(summary = "Generates a JWT token upon successful login that will be used for Authorizations within tomcat container",
             description = "You will need to append the string 'Bearer ' to the token before adding it to your Authorization header. NOTE: " + "there's a single space after the 'Bearer ' string. Don't forget to include it.")
     @ApiResponses(
             value = {
@@ -56,6 +55,6 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody ChangePasswordDto changePasswordDto){
-        return ResponseEntity.ok( new ApiResponse<>("Reset successful!", true, userService.resetPassword(changePasswordDto)));
+        return ResponseEntity.ok( new ApiResponse<>("Password Reset successful!", true, userService.resetPassword(changePasswordDto)));
     }
 }

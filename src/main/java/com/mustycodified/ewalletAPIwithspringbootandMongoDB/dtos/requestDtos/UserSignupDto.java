@@ -15,35 +15,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserSignupDto {
 
-    @NotNull(message = "first name required")
+    @NotBlank(message = "first name required")
     @Schema(description = "first name", example = "Mustapha")
     private String firstName;
 
-    @NotNull
+    @NotBlank(message = "last name required")
     @Schema(description = "last name", example = "Musa")
     private String lastName;
 
-    @NotNull
+    @NotBlank(message = "provide a valid email address")
     @Schema(description = "email address", example = "ilemonamustapha@gmail.com")
     private String email;
 
-    @NotNull
+    @NotBlank
     @Schema(description = "country", example = "Nigeria")
     private String country;
 
-    @NotNull
+    @NotBlank
     @Schema(description = "state", example = "Kogi")
     private String state;
 
-    @NotNull
+    @NotBlank
     @Schema(description = "home address", example = "Ilara road, Ilisan Remo")
     private String homeAddress;
 
-    @NotNull
-    @Schema(description = "passsword", example = "1994")
+    @NotBlank(message = "password is required")
+    @Schema(description = "password", example = "1994")
     private String password;
 
-    @NotNull
-    @Schema(description = "phoneNumber", example = "08166099828")
-    private String phoneNumber;
+    @NotBlank
+    @Schema(description = "mobileNumber", example = "08166099828")
+    private String mobileNumber;
 }

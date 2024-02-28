@@ -50,7 +50,7 @@ public class User extends BaseEntity{
     private String homeAddress;
 
     @Column(length = 15)
-    private String phoneNumber;
+    private String mobileNumber;
 
     public User(){
         super();

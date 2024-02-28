@@ -23,8 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
-
-
 @OpenAPIDefinition(
 		info=@Info(
 				title = "eWallet RESTful Web API Documentation",

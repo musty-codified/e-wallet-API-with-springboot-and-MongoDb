@@ -48,13 +48,9 @@ public class UserServiceImpl implements UserService {
     private final EmailServiceImpl emailService;
     private final MongoTemplate mongoTemplate;
     private final CustomUserDetailService customUserDetailService;
-
     private final JwtUtils jwtUtil;
-
     private final WalletRepository walletRepository;
-
     private final AuthenticationManager authenticationManager;
-
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
@@ -62,7 +58,6 @@ public class UserServiceImpl implements UserService {
         if (!appUtil.validEmail(userDto.getEmail())) {
             throw new ValidationException("Invalid email format {"+userDto.getEmail()+"}");
         }
-
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new ValidationException("User with email: " + userDto.getEmail() + " already exists");
         }
@@ -71,7 +66,7 @@ public class UserServiceImpl implements UserService {
         String userId = appUtil.generateSerialNumber("usr");
         newUser.setUuid(userId);
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        newUser.setPhoneNumber((appUtil.getFormattedNumber(userDto.getPhoneNumber())));
+        newUser.setMobileNumber((appUtil.getFormattedNumber(userDto.getMobileNumber())));
         newUser.setRoles(Roles.ROLE_USER.getAuthorities().stream().map(Objects::toString).collect(Collectors.joining(",")));
         newUser.setStatus(Status.INACTIVE.name());
 
@@ -84,7 +79,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto activateUser(ActivateUserDto activateUserDto) {
-     validateOTP(activateUserDto.getEmail(), activateUserDto.getOtp());
+        System.out.println("Starting verification");
+        appUtil.print(activateUserDto);
+
+        validateOTP(activateUserDto.getEmail(), activateUserDto.getOtp());
         User userToActivate = userRepository.findByEmail(activateUserDto.getEmail())
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -95,7 +93,7 @@ public class UserServiceImpl implements UserService {
         Wallet newWallet = Wallet.builder()
                 .balance(BigDecimal.ZERO)
                 .email(activateUserDto.getEmail())
-                .walletUUID(appUtil.generateSerialNumber("xyz"))
+                .walletUUID(appUtil.generateSerialNumber("zen"))
                 .build();
         walletRepository.save(newWallet);
 
@@ -116,12 +114,13 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("User with email: " + userEmail + " does not exists");
 
             String otp = appUtil.generateSerialNumber("otp");
+           System.out.println(userEmail);
             memStorage.save(userEmail, otp, 900); //expires in 15mins
 
         MailDto mailDto = MailDto.builder()
                 .to(userEmail)
                 .subject(mailSubject.toUpperCase())
-                .body(String.format("Use this generated OTP to %s: %s (Expires in 15mins)", mailSubject.toLowerCase(), otp))
+                .body(String.format("Use this OTP to %s; %s will expires in 15 minutes)", mailSubject.toLowerCase(), otp))
                 .build();
 
         emailService.sendMail(mailDto);
@@ -138,7 +137,7 @@ public class UserServiceImpl implements UserService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword())
             );
-            UserResponseDto userResponseDto;
+            UserResponseDto userResponseDto = null;
 
             if (authentication.isAuthenticated()) {
                 User user = userRepository.findByEmail(creds.getEmail())
@@ -195,8 +194,13 @@ public class UserServiceImpl implements UserService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String newToken = jwtUtil.generateToken(userDetails);
 
-        UserResponseDto userResponseDto = appUtil.getMapper().convertValue(userRepository.findByEmail(updatePasswordDto.getEmail())
-                .orElseThrow(() -> new AuthenticationException("User does not exist")), UserResponseDto.class);
+        User user = userRepository.findByEmail(updatePasswordDto.getEmail())
+                .orElseThrow(() -> new AuthenticationException("User does not exist"));
+        user.setPassword(passwordEncoder.encode(updatePasswordDto.getPassword()));
+        User updatedUser = userRepository.save(user);
+        appUtil.print(updatedUser);
+
+        UserResponseDto userResponseDto = appUtil.getMapper().convertValue(updatedUser, UserResponseDto.class);
         userResponseDto.setToken(newToken);
 
         return userResponseDto;
@@ -213,12 +217,9 @@ public class UserServiceImpl implements UserService {
     private void validateOTP(String memCachedKey, String value){
         if (!userRepository.existsByEmail(memCachedKey))
             throw new NotFoundException("User not found");
-
         if (!appUtil.validEmail(memCachedKey))
             throw new ValidationException("Invalid email");
-
         String cachedOTP = memStorage.getValueByKey(memCachedKey);
-
         if(cachedOTP == null)
             throw new ValidationException("OTP expired");
         if(!cachedOTP.equals(value))

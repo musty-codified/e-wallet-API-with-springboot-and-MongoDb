@@ -1,6 +1,5 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB.controllers.restControllers;
 
-
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.requestDtos.UpdatePasswordDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.requestDtos.UserSignupDto;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.responseDtos.ApiResponse;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @Tag(name = "User Endpoint", description = "Exposes REST API endpoints pertaining to users")
@@ -26,9 +26,10 @@ public class UserController {
     @Operation(summary = "Create a new user account",
             description = "After creating your account, an OTP will be sent to your provided email." +
             "\n Copy the code and navigate to 'activate-user' endpoint. \n")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Successfully created a user")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201",
+            description = "Successfully created a user")
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@RequestBody UserSignupDto userDto){
+    public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@Valid @RequestBody UserSignupDto userDto){
        UserResponseDto userResponseDto = userService.signup(userDto);
        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                .path("/{uuid}")
@@ -41,6 +42,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Password updated successfully")
     @PostMapping("/update-password")
     public ResponseEntity<ApiResponse<UserResponseDto>> updatePassword(@RequestBody UpdatePasswordDto changePasswordDto, @RequestHeader("Authorization") String token){
+        System.out.println("Inside update password controller");
         if (token.startsWith("Bearer")) {
             token = token.replace("Bearer", "").replaceAll("\\s", "");
         } else throw new AuthenticationException("Invalid access token. Pls ensure token starts with 'Bearer '");
@@ -52,7 +54,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Logout successful")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String token){
-        return ResponseEntity.ok().body(new ApiResponse<>("You are currently logged out!", true, userService.logout(token)));
+        return ResponseEntity.ok().body(new ApiResponse<>("You have logged out", true, userService.logout(token)));
 
     }
 }
