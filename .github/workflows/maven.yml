@@ -50,9 +50,9 @@ jobs:
           sudo apt-get install -y awscli
           aws --version
 
-      -  name: Create Source Bundle
-         run: |
-          zip -r $GITHUB_WORKSPACE/my-app-source-bundle.zip Dockerfile .ebextensions src target 
+#      -  name: Create Source Bundle
+#         run: |
+#          zip -r $GITHUB_WORKSPACE/my-app-source-bundle.zip Dockerfile .ebextensions src target
         
         #To authenticate from the API or CLI you must provide your access-key, and the secret-key,
        #and aaditional security information
