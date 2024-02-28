@@ -50,22 +50,22 @@ jobs:
           sudo apt-get install -y awscli
           aws --version
 
-#      -  name: Create Source Bundle
-#         run: |
-#          zip -r $GITHUB_WORKSPACE/my-app-source-bundle.zip Dockerfile .ebextensions src target
-        
+      - name: Create Source Bundle
+        run: |
+          cd $GITHUB_WORKSPACE
+          zip -r e-wallet-source-bundle.zip Dockerfile README.md mvnw mvnw.cmd pom.xml src
+
         #To authenticate from the API or CLI you must provide your access-key, and the secret-key,
-       #and aaditional security information
+       #and additional security information
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
         with:
             aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             region: us-east-1
-            environment_name: Digital-WalletAPI-env
-            application_name: Digital-Wallet_API
-#            deployment_package: elasticbeanstalk/docker-compose.yml
-#            source-bundle: S3Bucket=elasticbeanstalk,S3Key=$GITHUB_SHA.zip
+            environment_name: Digital-wallet-API-env
+            application_name: digital-Wallet-API
+            source-bundle: $GITHUB_WORKSPACE/e-wallet-source-bundle.zip
             deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
             version_label: v1.0.0
 
