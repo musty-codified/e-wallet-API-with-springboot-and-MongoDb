@@ -53,7 +53,7 @@ jobs:
       - name: Create Source Bundle
         run: |
           cd $GITHUB_WORKSPACE
-          zip -r e-wallet-source-bundle.zip Dockerfile README.md mvnw mvnw.cmd pom.xml src
+          zip -r eWallet-source-bundle.zip Dockerfile README.md mvnw mvnw.cmd pom.xml src
 
         #To authenticate from the API or CLI you must provide your access-key, and the secret-key,
        #and additional security information
@@ -63,9 +63,9 @@ jobs:
             aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             region: us-east-1
-            environment_name: Digital-wallet-API-env
-            application_name: digital-Wallet-API
-            source-bundle: $GITHUB_WORKSPACE/e-wallet-source-bundle.zip
+            environment_name: EWallet-API-env
+            application_name: eWallet-API
+            source-bundle: $GITHUB_WORKSPACE/eWallet-source-bundle.zip
             deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
             version_label: v1.0.0
 
