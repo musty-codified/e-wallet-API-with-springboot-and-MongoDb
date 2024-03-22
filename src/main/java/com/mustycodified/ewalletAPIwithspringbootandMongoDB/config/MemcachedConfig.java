@@ -26,7 +26,7 @@ import java.util.List;
 @Configuration
 public class MemcachedConfig extends AbstractSSMConfiguration {
 
-    @Value("${memcached.service.host}")
+    @Value("${memcached.service.host:127.0.0.1}")
     private String memcachedHost;
     @Value("${memcached.service.port}")
     private int memcachedPort;

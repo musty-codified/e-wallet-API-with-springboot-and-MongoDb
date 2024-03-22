@@ -42,7 +42,6 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Password updated successfully")
     @PostMapping("/update-password")
     public ResponseEntity<ApiResponse<UserResponseDto>> updatePassword(@RequestBody UpdatePasswordDto changePasswordDto, @RequestHeader("Authorization") String token){
-        System.out.println("Inside update password controller");
         if (token.startsWith("Bearer")) {
             token = token.replace("Bearer", "").replaceAll("\\s", "");
         } else throw new AuthenticationException("Invalid access token. Pls ensure token starts with 'Bearer '");

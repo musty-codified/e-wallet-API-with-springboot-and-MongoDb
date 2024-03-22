@@ -72,6 +72,7 @@ public class UserServiceImpl implements UserService {
 
         newUser = userRepository.save(newUser);
 
+        //self call
         sendToken(newUser.getEmail(), "activate your account");
 
         return appUtil.getMapper().convertValue(newUser, UserResponseDto.class);
@@ -114,7 +115,6 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("User with email: " + userEmail + " does not exists");
 
             String otp = appUtil.generateSerialNumber("otp");
-           System.out.println(userEmail);
             memStorage.save(userEmail, otp, 900); //expires in 15mins
 
         MailDto mailDto = MailDto.builder()
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto  login(UserLoginDto creds) {
+    public UserResponseDto login(UserLoginDto creds) {
         if(!appUtil.validEmail(creds.getEmail()))
             throw new ValidationException("Invalid email");
 

@@ -50,7 +50,7 @@ public class PaymentController {
     @PostMapping("/status-webhook")
     public ResponseEntity<String> getPaymentStatus(@RequestBody InitiateTransactionDto transactionResponseDto) {
 
-        return ResponseEntity.ok().body("Thank you");
+        return ResponseEntity.ok().body("Thank you. Webhook notification received successfully");
     }
     @Operation(summary = "Verify the callback by checking the payment status with Paystack's API."
             , description = "Updates the user's wallet balance with the payment amount if the payment is successful")
