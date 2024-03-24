@@ -51,13 +51,6 @@ jobs:
 
         - name: Checkout repository
           uses: actions/checkout@v2
-
-        - name: Copy Docker Compose file to runner
-          run: |
-            cp docker-compose.yml $GITHUB_WORKSPACE
-          env:
-            GITHUB_WORKSPACE: ${{ github.workspace }}
-
         - name: Log in to Docker Hub
           uses: docker/login-action@v2
           with:
