@@ -42,13 +42,6 @@ jobs:
     needs: build
     runs-on: [ewallet-ec2]
     steps:
-#      - name: Pull image from dockerhub
-#        run: docker pull mustycodified/e-wallet-api
-#      - name: Delete old container
-#        run: docker rm -f api
-#      - name: Run docker container
-#      - name: docker run -d -p:9090:8080 --name api mustycodified/e-wallet-api
-
         - name: Checkout repository
           uses: actions/checkout@v2
         - name: Log in to Docker Hub
@@ -58,16 +51,14 @@ jobs:
             password: ${{ secrets.DOCKER_PASSWORD }}
 
         - name: Pull Docker images
-          run: docker-compose pull
-          working-directory: $GITHUB_WORKSPACE
+          run: docker-compose -f $GITHUB_WORKSPACE/docker-compose.yml pull
 
         - name: Stop existing containers
-          run: docker-compose down
-          working-directory: $GITHUB_WORKSPACE
+          run: docker-compose -f $GITHUB_WORKSPACE/docker-compose.yml down
 
         - name: Start services
           run: docker-compose up -d
-          working-directory: $GITHUB_WORKSPACE
+          working-directory: docker-compose -f $GITHUB_WORKSPACE/docker-compose.yml up -d
 
 #      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
 #    - name: Update dependency graph
