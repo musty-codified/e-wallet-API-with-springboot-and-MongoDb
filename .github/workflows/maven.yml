@@ -38,7 +38,6 @@ jobs:
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-       #AWS & Elasticbeanstalk
   deploy:
     needs: build
     runs-on: [ewallet-ec2]
