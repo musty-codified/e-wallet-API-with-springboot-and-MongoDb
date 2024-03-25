@@ -39,8 +39,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
   deploy:
     needs: build
-    runs-on: self-hosted
-#    runs-on: [ewallet-ec2]
+    runs-on: [ewallet-ec2]
     steps:
         - name: Checkout repository
           uses: actions/checkout@v2
