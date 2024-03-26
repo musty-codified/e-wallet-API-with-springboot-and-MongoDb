@@ -19,7 +19,6 @@ services:
     networks:
       springboot-mongo-net:
     restart: on-failure
-#Database
   db:
     container_name: db
     image: mongo
