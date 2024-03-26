@@ -3,7 +3,7 @@ services:
   api:
     container_name: api
     build:
-      context: ./
+      context: ./e-wallet-API-with-springboot-and-MongoDb
       dockerfile: Dockerfile
     environment :
       APP_DB: docker
