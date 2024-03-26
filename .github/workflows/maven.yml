@@ -51,9 +51,6 @@ jobs:
         - name: Pull Docker images
           run: docker-compose -f $GITHUB_WORKSPACE/docker-compose.yml pull
 
-        - name: say hello to ec2-deploy-job
-          run : echo "Hello ec2-deploy-job"
-
         - name: Stop existing containers
           run: docker-compose -f $GITHUB_WORKSPACE/docker-compose.yml down
 
