@@ -211,7 +211,7 @@ public class TransactionServiceImpl implements TransactionService {
          apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
 
         } catch (Exception e){
-            throw new NotFoundException(e.getMessage()+". Sorry about that\n. This is just a test API'\t', but your transfer would be processed if this was a production app");
+            throw new NotFoundException(e.getMessage()+". Sorry about that\n. This is just a test API, but your transfer would be processed if this was a production app");
         }
 
         //Map response to TransactionInitResponseDto
