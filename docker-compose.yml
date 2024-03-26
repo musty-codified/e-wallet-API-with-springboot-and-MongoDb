@@ -10,8 +10,9 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://root:password@db:27017/?authSource=admin&authMechanism=SCRAM-SHA-1
       SPRING_DATA_MONGODB_DATABASE: walletDB
       MEMCACHED_SERVICE_HOST: memcached_container
-      PAYSTACK_SECRETKEY: ${env.PAYSTACK_SECRETKEY}
-      APP_JWTSECRET: ${env.PAYSTACK_SECRETKEY}
+      PAYSTACK_SECRETKEY: sk_test_55d2be3f104583697bd6410d40656c34350db331
+#      APP_JWTSECRET: ${env.PAYSTACK_SECRETKEY}
+      APP_JWTSECRET: f9i4gu83nfl0jk379kpapimaciano94uwillywonkers
     ports:
       - "9090:9090"
     depends_on:
