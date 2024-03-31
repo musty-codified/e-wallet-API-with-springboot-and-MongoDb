@@ -64,9 +64,7 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 	private final MongoTemplate mongoTemplate;
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx =
 				SpringApplication.run(EWalletApiWithSpringbootAndMongoDbApplication.class, args);
-		       Arrays.stream(ctx.getBeanDefinitionNames()).forEach(System.out::println);
 	}
 
 	@Bean
