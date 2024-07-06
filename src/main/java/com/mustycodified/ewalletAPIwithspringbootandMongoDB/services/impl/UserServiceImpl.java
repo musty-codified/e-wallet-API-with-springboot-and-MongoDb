@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtil;
     private final WalletRepository walletRepository;
     private final AuthenticationManager authenticationManager;
-    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final Logger  LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public UserResponseDto signup(UserSignupDto userDto) {

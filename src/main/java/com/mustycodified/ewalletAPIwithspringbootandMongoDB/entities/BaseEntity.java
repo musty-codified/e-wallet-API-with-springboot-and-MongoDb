@@ -8,7 +8,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.io.Serializable;
 import java.util.Date;
 
-
 @AllArgsConstructor
 @Data
 public class BaseEntity implements Serializable {

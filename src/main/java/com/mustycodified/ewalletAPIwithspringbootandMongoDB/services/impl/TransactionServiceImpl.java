@@ -44,6 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
 
+
       // =========================================Deposits========================= //
     @Override
     public ApiResponse initiateTransaction(InitiateTransactionDto transactionDto) {
@@ -211,7 +212,7 @@ public class TransactionServiceImpl implements TransactionService {
          apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
 
         } catch (Exception e){
-            throw new NotFoundException(e.getMessage()+". Sorry about that\n. This is just a test API, but your transfer would be processed if this was a production app");
+            throw new NotFoundException(e.getMessage()+". Sorry about that\n. This i s just a test API, but your transfer would be processed if this was a production app");
         }
 
         //Map response to TransactionInitResponseDto
@@ -250,6 +251,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         //Retrieve account details from Paystack 'bank resolve' API
         ResponseEntity<ApiResponse> apiResponse =
+
                 restTemplate.exchange(requestUrl, HttpMethod.GET, entity, ApiResponse.class);
 
         //map response data to AccountDto
