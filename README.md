@@ -1,11 +1,10 @@
 # EWallet-Backend-API
 The backend api for a digital wallet application that uses MongoDB as the database.
-The application enable users to create and manage their digital wallet, add funds to it, and make transactions.
 
 `Built with Spring Boot, secured with Spring Security (JWT), documented with Swagger (API),
 containerized with Docker, deployed on an AWS EC2 instance.`
 
-## Technology  used ##
+## Tools used ##
 Following tools and libraries were used during the development of the API :
 - **Java 17**
 - **Spring Boot** 
@@ -43,8 +42,7 @@ For security purpose, please make sure to set appropriate access controls for Mo
 For any issues or queries, please raise a ticket on the GitHub repository or email me at ilemonamustapha@gmail.com.
 
 ## API Documentation ##
-The application exposes RESTful APIs for creating and managing digital wallet accounts.
-It's as important to document (as is the development) and communicate your APIs in a readable manner to frontend teams or external consumers.
+The application exposes RESTful APIs for managing digital wallet account.
 The tool for API documentation used in this project is Swagger, you can open the same inside a browser at the following url - [here](http://localhost:9090/swagger-ui/index.html#/)
 
 
