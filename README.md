@@ -1,11 +1,11 @@
 # EWallet-Backend-API
 The backend api for a digital wallet application that uses MongoDB as the database.
-The application enable users to create and manage their digital wallet, add funds to it, and make transactions.
+The application enable users to create their digital wallets and manage their funds while they make transactions.
 
 `Built with Spring Boot, secured with Spring Security (JWT), documented with Swagger (API),
 containerized with Docker, deployed on an AWS EC2 instance.`
 
-## Technology  used ##
+## Tools  used ##
 Following tools and libraries were used during the development of the API :
 - **Java 17**
 - **Spring Boot** 
@@ -33,8 +33,8 @@ The application can be deployed on any Java Servlet container, or docker contain
 * A better way to run the application is to use the docker-compose.yml file, which is used to run multi-containers (Microservices).
 * Simply download the [Docker compose file](https://github.com/musty-codified/e-Wallet-API-with-Springboot-and-MongoDB/blob/main/docker-compose.yml)
 * You can edit the file to your custom configurations
-* Then navigate to where the file is located on your terminal and run 'docker compose up'
-* Voilà! once the image downloads are completed and the application is running, you can then navigate to http://localhost:9090/swagger-ui/index.html to access the end points
+* Then navigate to where the file is located on your terminal and run 'docker-compose up'
+* Voilà! once the image downloads are completed and the application is running, you can then navigate to http://localhost:9090/swagger-ui/index.html to access the endpoints
 
 ### Note
 For security purpose, please make sure to set appropriate access controls for MongoDB.

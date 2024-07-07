@@ -44,7 +44,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
 
-
       // =========================================Deposits========================= //
     @Override
     public ApiResponse initiateTransaction(InitiateTransactionDto transactionDto) {
@@ -123,7 +122,6 @@ public class TransactionServiceImpl implements TransactionService {
               .map(transaction -> appUtil.getMapper().convertValue(transaction, TransactionInitResponseDto.class))
               .collect(Collectors.toList());
 
-      //page zero is the first page by default
         if (page > 0) page = page -1;
         int max = Math.min(limit * (page + 1), transactionList.size());
         int min = page * limit;
