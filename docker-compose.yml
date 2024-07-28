@@ -13,7 +13,7 @@ services:
       PAYSTACK_SECRETKEY: sk_test_55d2be3f104583697bd6410d40656c34350db331
       APP_JWTSECRET: f9i4gu83nfl0jk379kpapimaciano94uwillywonkers
     ports:
-      - "9090:9090"
+      - "9080:9080"
     depends_on:
      - db
     networks:
@@ -50,7 +50,7 @@ services:
     container_name: memcached_container
     image: memcached
     ports:
-      - "11211:11211"
+      - "11212:11211"
     networks:
       springboot-mongo-net:
     restart: always

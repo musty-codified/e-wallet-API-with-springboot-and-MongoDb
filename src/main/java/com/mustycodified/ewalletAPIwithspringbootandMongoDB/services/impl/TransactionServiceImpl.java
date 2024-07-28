@@ -128,7 +128,6 @@ public class TransactionServiceImpl implements TransactionService {
         return new PageImpl<>(transactionList.subList(min, max), pageableRequest, transactionList.size());
     }
 
-    //==============================================Transfer actions=======================================//
 
     public ApiResponse<List<BankDto>> fetchBanks(String currency, String type) {
         String url = "https://api.paystack.co/bank?currency="+currency +((type == null)? "": "&type="+type);
@@ -145,7 +144,7 @@ public class TransactionServiceImpl implements TransactionService {
         return new ApiResponse<>(apiResponse.getBody().getMessage(), apiResponse.getBody().isStatus(), bankList);
     }
 
-   // =======================================================================================//
+     //=================================================Transfer actions============================================//
     @Override
     public ApiResponse<FundTransferDto> createTransferRecipient(AccountDto accountDto) {
         String requestUrl = "https://api.paystack.co/transferrecipient";
@@ -158,10 +157,10 @@ public class TransactionServiceImpl implements TransactionService {
         TransferRecipientDto transferRecipientDto =
              appUtil.getMapper().convertValue(Objects.requireNonNull(apiResponse.getBody()).getData(), TransferRecipientDto.class);
 
-        //Create and save unique transfer reference in memcached for use while initiating the fund transfer
+        //Create and save unique transfer reference in memcached for use before initiating the fund transfer
      String uniqueTransferReference = appUtil.generateSerialNumber("TRF_");
         localMemStorage.save(transferRecipientDto.getRecipient_code(),
-             uniqueTransferReference, 3600);
+             uniqueTransferReference, 3600);  //expires in 1 hour
 
      FundTransferDto fundTransferDto = FundTransferDto.builder()
              .recipient_code(transferRecipientDto.getRecipient_code())
@@ -210,7 +209,7 @@ public class TransactionServiceImpl implements TransactionService {
          apiResponse = restTemplate.exchange(requestUrl, HttpMethod.POST, entity, ApiResponse.class);
 
         } catch (Exception e){
-            throw new NotFoundException(e.getMessage()+". Sorry about that\n. This i s just a test API, but your transfer would be processed if this was a production app");
+            throw new NotFoundException(e.getMessage()+". Sorry about that\n. This is just a test API, but your transfer would be processed if this was a production app");
         }
 
         //Map response to TransactionInitResponseDto

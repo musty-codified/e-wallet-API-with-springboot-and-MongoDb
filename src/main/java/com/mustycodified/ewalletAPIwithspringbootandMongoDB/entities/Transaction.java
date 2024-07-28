@@ -2,7 +2,6 @@ package com.mustycodified.ewalletAPIwithspringbootandMongoDB.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mustycodified.ewalletAPIwithspringbootandMongoDB.dtos.paystack.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

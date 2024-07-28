@@ -44,7 +44,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> updatePassword(@RequestBody UpdatePasswordDto changePasswordDto, @RequestHeader("Authorization") String token){
         if (token.startsWith("Bearer")) {
             token = token.replace("Bearer", "").replaceAll("\\s", "");
-        } else throw new AuthenticationException("Invalid access token. Pls ensure token starts with 'Bearer '");
+        } else throw new AuthenticationException("Invalid access token. Please ensure token starts with 'Bearer '");
         changePasswordDto.setVerificationToken(token);
         return ResponseEntity.ok().body(new ApiResponse<>("Password updated successfully", true, userService.updatePassword(changePasswordDto)));
     }

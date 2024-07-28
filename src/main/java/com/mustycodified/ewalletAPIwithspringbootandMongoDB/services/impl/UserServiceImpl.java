@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto activateUser(ActivateUserDto activateUserDto) {
-        System.out.println("Starting verification");
         appUtil.print(activateUserDto);
 
         validateOTP(activateUserDto.getEmail(), activateUserDto.getOtp());
@@ -89,7 +88,8 @@ public class UserServiceImpl implements UserService {
 
         userToActivate.setStatus(Status.ACTIVE.name());
 
-        UserResponseDto userResponseDto = appUtil.getMapper().convertValue(userRepository.save(userToActivate), UserResponseDto.class);
+        UserResponseDto userResponseDto =
+                appUtil.getMapper().convertValue(userRepository.save(userToActivate), UserResponseDto.class);
 
         Wallet newWallet = Wallet.builder()
                 .balance(BigDecimal.ZERO)

@@ -21,7 +21,7 @@ public class AccountDto {
     @Schema(example = "Mustapha Musa")
     private String name;
 
-    @Schema(example = "0001234567")
+    @Schema(example = "2216440711")
     private String account_number;
 
     @Schema(example = "057 for Zenith Bank")

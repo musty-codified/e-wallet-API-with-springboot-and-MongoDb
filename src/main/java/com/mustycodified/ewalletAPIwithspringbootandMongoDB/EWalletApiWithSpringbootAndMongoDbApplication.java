@@ -1,7 +1,5 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.security.SecurityConstants;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
 
 @OpenAPIDefinition(
 		info=@Info(
@@ -48,7 +43,7 @@ import java.util.Arrays;
 		servers = {
 				@Server(
 						url = "http://localhost:9090/",
-						description = "The Development API Server"
+						description = "The Development Server"
 				),
 				// Add more servers if necessary
 		}
@@ -72,10 +67,6 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 		return new BCryptPasswordEncoder();
 	}
 
-//	@Bean
-//	public WebClient webClient(){
-//		return WebClient.builder().build();
-//	}
 
 	@Bean
 	public RestTemplate restTemplate(){
@@ -91,9 +82,9 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 
 	@Override
 	public void run(String... args) throws Exception {
-//		mongoTemplate.dropCollection("transactions");
-//		mongoTemplate.dropCollection("wallets");
-//		mongoTemplate.dropCollection("users");
+		mongoTemplate.dropCollection("transactions");
+		mongoTemplate.dropCollection("wallets");
+		mongoTemplate.dropCollection("users");
 	}
 
 

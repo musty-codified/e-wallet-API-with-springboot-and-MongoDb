@@ -33,7 +33,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UserResponseDto>> activateUser(@RequestBody ActivateUserDto activateUserDto){
         return ResponseEntity.ok( new ApiResponse<>("User activated!", true, userService.activateUser(activateUserDto)));
     }
-    @Operation(summary = "Generates a JWT token upon successful login that will be used for Authorizations within tomcat container",
+    @Operation(summary = "Generates a JWT token upon successful login that will be used for Authorization",
             description = "You will need to append the string 'Bearer ' to the token before adding it to your Authorization header. NOTE: " + "there's a single space after the 'Bearer ' string. Don't forget to include it.")
     @ApiResponses(
             value = {
