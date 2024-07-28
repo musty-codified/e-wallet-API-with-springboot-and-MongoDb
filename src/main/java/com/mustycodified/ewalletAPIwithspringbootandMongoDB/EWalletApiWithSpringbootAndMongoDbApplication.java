@@ -56,7 +56,7 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 	@Value("${api.paystack_secret}")
 	private String apiKey;
 
-	private final MongoTemplate mongoTemplate;
+//	private final MongoTemplate mongoTemplate;
 
 	public static void main(String[] args) {
 				SpringApplication.run(EWalletApiWithSpringbootAndMongoDbApplication.class, args);
@@ -82,9 +82,9 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 
 	@Override
 	public void run(String... args) throws Exception {
-		mongoTemplate.dropCollection("transactions");
-		mongoTemplate.dropCollection("wallets");
-		mongoTemplate.dropCollection("users");
+//		mongoTemplate.dropCollection("transactions");
+//		mongoTemplate.dropCollection("wallets");
+//		mongoTemplate.dropCollection("users");
 	}
 
 
