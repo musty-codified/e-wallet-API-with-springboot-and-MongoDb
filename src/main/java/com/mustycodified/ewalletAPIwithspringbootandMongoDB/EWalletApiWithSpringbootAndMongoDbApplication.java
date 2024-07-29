@@ -1,7 +1,7 @@
 package com.mustycodified.ewalletAPIwithspringbootandMongoDB;
 
 import com.mustycodified.ewalletAPIwithspringbootandMongoDB.security.SecurityConstants;
-import io.github.cdimascio.dotenv.Dotenv;
+
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -60,10 +60,6 @@ public class EWalletApiWithSpringbootAndMongoDbApplication implements CommandLin
 //	private final MongoTemplate mongoTemplate;
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure().load();
-		dotenv.entries().forEach(entry->{
-			System.setProperty(entry.getKey(),entry.getValue());
-		});
 				SpringApplication.run(EWalletApiWithSpringbootAndMongoDbApplication.class, args);
 	}
 
