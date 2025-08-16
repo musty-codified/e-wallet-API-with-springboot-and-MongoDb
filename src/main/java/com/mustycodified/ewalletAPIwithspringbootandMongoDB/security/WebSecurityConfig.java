@@ -27,6 +27,7 @@ public class WebSecurityConfig {
     private static final String [] WHITE_LISTED_URLS = {
             "/",
             "/api/v1/auth/**",
+            "/api/v1/users/**",
             SecurityConstants.SIGN_UP_URL,
             "/v3/api-docs/**",
             "/configuration/**",
@@ -41,8 +42,8 @@ public class WebSecurityConfig {
         http.cors().and().csrf().disable()
                 .authorizeHttpRequests()
                 .antMatchers(WHITE_LISTED_URLS).permitAll()
-                .anyRequest()
-                .authenticated()
+//                .anyRequest()
+//                .authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

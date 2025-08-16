@@ -112,10 +112,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String sendToken(String userEmail, String mailSubject) {
         if (!userRepository.existsByEmail(userEmail))
-            throw new ValidationException("User with email: " + userEmail + " does not exists");
+        {throw new ValidationException("User with email: " + userEmail + " does not exists");}
 
             String otp = appUtil.generateSerialNumber("otp");
-            memStorage.save(userEmail, otp, 900); //expires in 15mins
+            memStorage.save(userEmail, otp, 900);  //expires in 15mins
 
         MailDto mailDto = MailDto.builder()
                 .to(userEmail)

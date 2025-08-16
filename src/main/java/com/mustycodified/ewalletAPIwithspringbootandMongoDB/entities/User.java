@@ -5,15 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import javax.persistence.*;
+
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Document("users")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User extends BaseEntity{
 
     private static final long serialVersionUID = 2L;
@@ -52,8 +57,5 @@ public class User extends BaseEntity{
     @Column(length = 15)
     private String mobileNumber;
 
-    public User(){
-        super();
-    }
 
 }

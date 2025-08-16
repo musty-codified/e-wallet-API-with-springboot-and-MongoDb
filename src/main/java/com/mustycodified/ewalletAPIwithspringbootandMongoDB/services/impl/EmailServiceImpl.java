@@ -53,4 +53,5 @@ public class EmailServiceImpl implements EmailService {
         return new ResponseEntity<>("An Error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
 }
